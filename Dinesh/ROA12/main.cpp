@@ -7,6 +7,8 @@ int main()
 	//sf::RenderWindow window(sf::VideoMode(200, 200), "ROA12", sf::Style::Fullscreen);
 	sf::RenderWindow window(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
 	//MainBackground.setFillColor(sf::Color::Red);
+	
+	// MAINBACKGROUNG
 	sf::Texture backgroundImage;
 	if (!backgroundImage.loadFromFile("Data/Wallpaper/Wallpaper_01.jpg"))
 	{
@@ -19,13 +21,14 @@ int main()
 	MainBackground.setOutlineThickness(8.f);
 	MainBackground.setOutlineColor(sf::Color::Black);
 	
-	sf::RectangleShape shape(sf::Vector2f(window.getSize().y * 0.467 * 0.84, window.getSize().y * 0.30));
+	// NOTIFICATIONBACKGROUND
+	sf::RectangleShape shape(MainBackground.getSize());
 	shape.setPosition(MainBackground.getPosition().x, MainBackground.getPosition().y - (shape.getSize().y));
-	shape.setFillColor(sf::Color(252, 226, 225));
-	
-	cout << MainBackground.getPosition().x << " " << MainBackground.getPosition().y << endl;
-	cout << shape.getPosition().x << " " << shape.getPosition().y << endl;
-
+	shape.setFillColor(sf::Color(48, 49, 44, 120));
+	//shape.setOrigin(0, shape.getSize().y);
+	sf::Vector2f PreviousPositionOfShape(shape.getPosition());
+	// cout << MainBackground.getPosition().x << " " << MainBackground.getPosition().y << endl;
+	// cout << shape.getPosition().x << " " << shape.getPosition().y << endl;
 
 	while (window.isOpen())
 	{
@@ -40,13 +43,43 @@ int main()
 			// Position will be set according to window not to whole screen.
 			sf::Vector2f MousePosition(sf::Mouse::getPosition(window));
 			// Checking if MainBackground contain mouse or not.
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && BoundaryOfMainBackground.contains(MousePosition))
-			{
-				cout << "x=" << MousePosition.x << " y=" << MousePosition.y << endl; 
-				/*if (MousePosition.x )
-				{
 
-				}*/
+			 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && BoundaryOfMainBackground.contains(MousePosition))
+			// if (BoundaryOfMainBackground.contains(MousePosition))
+			{
+				int up = 1, down = 1, left = 1;
+				sf::Vector2f temp(sf::Mouse::getPosition());
+				sf::Clock clock;
+				sf::Time time = sf::milliseconds(50);
+				while (clock.getElapsedTime() <= time && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				{
+					cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
+					if (sf::Mouse::getPosition().x == temp.x  && sf::Mouse::getPosition().y > temp.y)
+					{
+						up++;
+					}
+					else if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y < temp.y)
+					{
+						down++;
+						/*temp.x = sf::Mouse::getPosition().x;
+						temp.y = sf::Mouse::getPosition().y;*/
+					}
+
+
+					//shape.setPosition(temp.x, sf::Mouse::getPosition(window).y);
+
+
+				}
+				cout << "UP: " << up << endl;
+				cout << "Down: " << down << endl;
+				if (up > down)
+				{
+					shape.setPosition(MainBackground.getPosition());
+				}
+				else
+				{
+					shape.setPosition(PreviousPositionOfShape);
+				}
 			}
 		}
 			
