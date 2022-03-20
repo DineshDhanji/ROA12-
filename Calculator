@@ -5,7 +5,7 @@ using namespace std;
 int main()
 {
     sf::Font font;
-    if (!font.loadFromFile(""))
+    if (!font.loadFromFile("Fonts/ARIAL.ttf"))
     {
         cout << "Error!" << endl;
     }
@@ -32,8 +32,7 @@ int main()
 
 
     // layer 1 of extra buttons
-    //sf::Text rootsign;
-
+    
     sf::RectangleShape a(sf::Vector2f(CalculatorBackground.getSize().x, CalculatorBackground.getSize().y * 0.0625));
     a.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
     a.move(sf::Vector2f(0, display.getSize().y + predict.getSize().y));
@@ -44,25 +43,75 @@ int main()
     root.move(sf::Vector2f(0, display.getSize().y+predict.getSize().y));
     root.setFillColor(sf::Color::Transparent);
 
+    sf::Text rootsign;
+    rootsign.setFont(font);
+    rootsign.setCharacterSize(25);
+    rootsign.setFillColor(sf::Color::White);
+    rootsign.Bold;
+    rootsign.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
+    rootsign.move(sf::Vector2f(0, display.getSize().y + predict.getSize().y));
+    rootsign.move(sf::Vector2f(root.getSize().x * 0.4 , root.getSize().y * 0.2));
+    rootsign.setString(L"√");
+
     sf::RectangleShape pi(sf::Vector2f(CalculatorBackground.getSize().x * 0.17, CalculatorBackground.getSize().y * 0.0625));
     pi.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
     pi.move(sf::Vector2f(root.getSize().x + 0.2*root.getSize().x, display.getSize().y + predict.getSize().y));
     pi.setFillColor(sf::Color::Transparent);
 
+    sf::Text pisign;
+    pisign.setFont(font);
+    pisign.setCharacterSize(25);
+    pisign.setFillColor(sf::Color::White);
+    pisign.Bold;
+    pisign.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
+    pisign.move(sf::Vector2f(root.getSize().x + 0.2 * root.getSize().x, display.getSize().y + predict.getSize().y));
+    pisign.move(sf::Vector2f(pi.getSize().x * 0.4, pi.getSize().y * 0.2));
+    pisign.setString(L"π");
+
     sf::RectangleShape power(sf::Vector2f(CalculatorBackground.getSize().x * 0.17, CalculatorBackground.getSize().y * 0.0625));
     power.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
     power.move(sf::Vector2f(root.getSize().x*2 + 0.4 * root.getSize().x, display.getSize().y + predict.getSize().y));
     power.setFillColor(sf::Color::Transparent);
+
+    sf::Text powersign;
+    powersign.setFont(font);
+    powersign.setCharacterSize(25);
+    powersign.setFillColor(sf::Color::White);
+    powersign.Bold;
+    powersign.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
+    powersign.move(sf::Vector2f(root.getSize().x * 2 + 0.4 * root.getSize().x, display.getSize().y + predict.getSize().y));
+    powersign.move(sf::Vector2f(power.getSize().x * 0.4, power.getSize().y * 0.2));
+    powersign.setString(L"^");
     
     sf::RectangleShape euler(sf::Vector2f(CalculatorBackground.getSize().x * 0.17, CalculatorBackground.getSize().y * 0.0625));
     euler.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
     euler.move(sf::Vector2f(root.getSize().x*3 + 0.6 * root.getSize().x, display.getSize().y + predict.getSize().y));
     euler.setFillColor(sf::Color::Transparent);
+
+    sf::Text esign;
+    esign.setFont(font);
+    esign.setCharacterSize(25);
+    esign.setFillColor(sf::Color::White);
+    esign.Bold;
+    esign.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
+    esign.move(sf::Vector2f(root.getSize().x * 3 + 0.6 * root.getSize().x, display.getSize().y + predict.getSize().y));
+    esign.move(sf::Vector2f(euler.getSize().x * 0.4, euler.getSize().y * 0.2));
+    esign.setString("e");
     
     sf::RectangleShape factorial(sf::Vector2f(CalculatorBackground.getSize().x * 0.17, CalculatorBackground.getSize().y * 0.0625));
     factorial.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
     factorial.move(sf::Vector2f(root.getSize().x*4 + 0.8 * root.getSize().x, display.getSize().y + predict.getSize().y));
     factorial.setFillColor(sf::Color::Transparent);
+
+    sf::Text factorialsign;
+    factorialsign.setFont(font);
+    factorialsign.setCharacterSize(25);
+    factorialsign.setFillColor(sf::Color::White);
+    factorialsign.Bold;
+    factorialsign.setPosition(sf::Vector2f(CalculatorBackground.getPosition()));
+    factorialsign.move(sf::Vector2f(root.getSize().x * 4 + 0.8 * root.getSize().x, display.getSize().y + predict.getSize().y));
+    factorialsign.move(sf::Vector2f(factorial.getSize().x * 0.4, factorial.getSize().y * 0.2));
+    factorialsign.setString("!");
     
     // layer 1 of main buttons
 
@@ -217,11 +266,11 @@ int main()
         window.draw(predict);
 
         window.draw(a);
-        window.draw(root);
-        window.draw(pi);
-        window.draw(power);
-        window.draw(euler);
-        window.draw(factorial);
+        window.draw(root);      window.draw(rootsign);
+        window.draw(pi);        window.draw(pisign);
+        window.draw(power);     window.draw(powersign);
+        window.draw(euler);     window.draw(esign);
+        window.draw(factorial); window.draw(factorialsign);
 
         window.draw(b);
         window.draw(clear);
