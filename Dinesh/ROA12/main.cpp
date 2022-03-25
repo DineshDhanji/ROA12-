@@ -2,37 +2,54 @@
 #include <iostream>
 using namespace std;
 
+// GLOBAL VARIABLES
+int WhoIsActiveNow = 0;
 
+class DefaultSystem
+{
+private:
+	sf::Color FontColor;
+	sf::Color BackgroundColor;
+	
+public:
+	// SETTERS
+	void setFontColor(sf::Color FontColor)
+	{
+		this->FontColor = FontColor;
+	}
+	void setBackgroundColor(sf::Color BackgroundColor)
+	{
+		this->BackgroundColor = BackgroundColor;
+	}
 
-//class Notification
-//{
-//private:
-//	bool IsActive;
-//	sf::RectangleShape Background;
-//public:
-//	Notification(float x, float y)
-//	{
-//		IsActive = 0;
-//		Background.setSize(sf::Vector2f(sf::Vector2f(x, y)));
-//	}
-//
-//	// Setters & Getters
-//	void SetIsACtive(int IsActive)
-//	{
-//		this->IsActive = IsActive;
-//	}
-//	bool GetIsACtive(void)
-//	{
-//		return IsActive;
-//	}
-//
-//};
+	// GETTERS
+	sf::Color getFontColor(void)
+	{
+		return FontColor;
+	}
+	sf::Color getBackgroundColor(void)
+	{
+		return BackgroundColor;
+	}
+	
+	// CONSTRUCTOR(S)
+	DefaultSystem()
+	{
+		FontColor = sf::Color::Black;
+		//BackgroundColor = sf::Color::White;
+		BackgroundColor = sf::Color(48, 49, 44, 120);
+	}
+	// DESTRUCTOR(S)
+	~DefaultSystem() {}
+};
 
 
 int main()
 {
+	DefaultSystem DefaultSetting;
 
-	//sf::RenderWindow window(sf::VideoMode(200, 200), "ROA12", sf::Style::Fullscreen);
+
+//	sf::RenderWindow window(sf::VideoMode(200, 200), "ROA12", sf::Style::Fullscreen);
 	sf::RenderWindow window(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
 	//Notification notification(window.getSize().y * 0.467 * 0.84, window.getSize().y * 0.84);
 	//MainBackground.setFillColor(sf::Color::Red);
@@ -45,7 +62,6 @@ int main()
 	}
 	sf::RectangleShape MainBackground(sf::Vector2f(window.getSize().y * 0.467 * 0.84, window.getSize().y * 0.84));
 	MainBackground.setTexture(&backgroundImage);
-	//MainBackground.setOrigin(MainBackground.getSize().x / 2.0 , MainBackground.getSize().y / 2.0);
 	MainBackground.setPosition(window.getSize().x / 2 - MainBackground.getSize().x / 2, window.getSize().y / 2 - MainBackground.getSize().y / 2);
 	MainBackground.setOutlineThickness(8.f);
 	MainBackground.setOutlineColor(sf::Color::Black);
@@ -53,9 +69,7 @@ int main()
 	// NOTIFICATIONBACKGROUND
 	sf::RectangleShape shape(MainBackground.getSize());
 	shape.setPosition(MainBackground.getPosition().x, MainBackground.getPosition().y - (shape.getSize().y));
-	shape.setFillColor(sf::Color(48, 49, 44, 120));
-	//shape.setFillColor(sf::Color(255, 255, 0));
-	//shape.setOrigin(0, shape.getSize().y);
+	shape.setFillColor(DefaultSetting.getBackgroundColor());
 	sf::Vector2f PreviousPositionOfShape(shape.getPosition());
 	// cout << MainBackground.getPosition().x << " " << MainBackground.getPosition().y << endl;
 	// cout << shape.getPosition().x << " " << shape.getPosition().y << endl;
@@ -100,20 +114,18 @@ int main()
 				window.close();
 
 			// SWIPING FUNCTION
-			sf::FloatRect BoundaryOfMainBackground = MainBackground.getGlobalBounds();
 			// Position will be set according to window not to whole screen.
 			sf::Vector2f MousePosition(sf::Mouse::getPosition(window));
 			// Checking if MainBackground contain mouse or not.
-			 if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && BoundaryOfMainBackground.contains(MousePosition))
-			// if (BoundaryOfMainBackground.contains(MousePosition))
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && MainBackground.getGlobalBounds().contains(MousePosition) && !NavigationBar.getGlobalBounds().contains(MousePosition))
 			{
-				int up = 1, down = 1, left = 1;
+				int up = 1, down = 1;
 				sf::Vector2f temp(sf::Mouse::getPosition());
 				sf::Clock clock;
-				sf::Time time = sf::milliseconds(50);
-				while (clock.getElapsedTime() <= time && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				sf::Time time = sf::seconds(1);
+				while (clock.getElapsedTime().asSeconds() <= time.asSeconds() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 				{
-					cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
+					//cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
 					if (sf::Mouse::getPosition().x == temp.x  && sf::Mouse::getPosition().y > temp.y)
 					{
 						up++;
@@ -121,10 +133,7 @@ int main()
 					else if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y < temp.y)
 					{
 						down++;
-						/*temp.x = sf::Mouse::getPosition().x;
-						temp.y = sf::Mouse::getPosition().y;*/
 					}
-					//shape.setPosition(temp.x, sf::Mouse::getPosition(window).y);
 				}
 				cout << "UP: " << up << endl;
 				cout << "Down: " << down << endl;
