@@ -4,6 +4,8 @@ using namespace std;
 
 // GLOBAL SCOPE
 int WhoIsActiveNow = 0;
+int arr[2] = { 0, 1 };
+
 
 // CLASSES
 class DefaultSystem
@@ -131,9 +133,23 @@ public:
 
 };
 
-class Notification : protected Tile
+class Notification : public Tile
 {
+private:
+
 public:
+	void Appear(float x, float y)
+	{
+		Background.setPosition(x, y);
+		WhoIsActiveNow = getID();
+	}
+	void Disappear(float x, float y)
+	{
+		Background.setPosition(x, y);
+		WhoIsActiveNow = 0;
+	}
+
+
 	Notification(int ID, float x, float y) :Tile(ID)
 	{
 		Background.setSize(sf::Vector2f(x, y));
@@ -144,7 +160,8 @@ public:
 int main()
 {
 	//	sf::RenderWindow window(sf::VideoMode(200, 200), "ROA12", sf::Style::Fullscreen);
-	sf::RenderWindow window(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
+	// sf::RenderWindow window(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
+	sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
 
 	// Default Setting
 	DefaultSystem DefaultSetting;
@@ -156,18 +173,17 @@ int main()
 	{
 		cout << "Unable to open background image.";
 	}
-	Home.Background.setSize(sf::Vector2f(window.getSize().y * 0.467 * 0.84, window.getSize().y * 0.84));
+	Home.Background.setSize(sf::Vector2f(window->getSize().y * 0.467 * 0.84, window->getSize().y * 0.84));
 	Home.Background.setTexture(&backgroundImage);
-	Home.Background.setPosition(window.getSize().x / 2 - Home.Background.getSize().x / 2, window.getSize().y / 2 - Home.Background.getSize().y / 2);
+	Home.Background.setPosition(window->getSize().x / 2 - Home.Background.getSize().x / 2, window->getSize().y / 2 - Home.Background.getSize().y / 2);
 	Home.Background.setOutlineThickness(8.f);
 	Home.Background.setOutlineColor(sf::Color::Black);
 
 	// NAVIGATION
 	Navigation NavigationBar(Home.Background.getSize().x, Home.Background.getSize().y * 0.047);
 
-	// NAVIGATION BAR 
+	// Notification
 	Notification Notifications(1, Home.Background.getSize().x, Home.Background.getSize().y);
-
 	Notifications.Background.setPosition(Home.Background.getPosition().x, Home.Background.getPosition().y - (Home.Background.getSize().y));
 	Notifications.Background.setFillColor(DefaultSetting.getBackgroundColor());
 	sf::Vector2f PreviousPositionOfNotificationBackground(Notifications.Background.getPosition());
@@ -175,17 +191,17 @@ int main()
 	// cout << shape.getPosition().x << " " << shape.getPosition().y << endl;
 
 
-	while (window.isOpen())
+	while (window->isOpen())
 	{
 		sf::Event event;
-		while (window.pollEvent(event))
+		while (window->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
-				window.close();
+				window->close();
 
 			// SWIPING FUNCTION
 			// Position will be set according to window not to whole screen.
-			sf::Vector2f MousePosition(sf::Mouse::getPosition(window));
+			sf::Vector2f MousePosition(sf::Mouse::getPosition(*window));
 			// Checking if MainBackground contain mouse or not.
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home.Background.getGlobalBounds().contains(MousePosition) && !NavigationBar.Bar.getGlobalBounds().contains(MousePosition))
 			{
@@ -209,14 +225,16 @@ int main()
 				cout << "Down: " << down << endl;
 				if (up > down)
 				{
-					Notifications.Background.setPosition(Home.Background.getPosition());
+					Notifications.Appear(Home.Background.getPosition().x, Home.Background.getPosition().y);
+					window->draw(Notifications.Background);
+					//Notifications.Background.setPosition(Home.Background.getPosition());
 				}
 				else
 				{
-					Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
+					Notifications.Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
+					// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
 				}
 			}
-
 
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -228,17 +246,46 @@ int main()
 				Home.Background.setPosition(Home.Background.getPosition().x + 10, Home.Background.getPosition().y);
 			}
 		}
-		NavigationBar.Appear(Home.Background.getPosition().x, Home.Background.getSize().y + Home.Background.getPosition().y);
 
-		window.clear(sf::Color::White);
-		window.draw(Home.Background);
-		window.draw(Notifications.Background);
-		window.draw(NavigationBar.Bar);
-		window.draw(NavigationBar.BackIcon);
-		window.draw(NavigationBar.HomeIcon);
-		window.draw(NavigationBar.HomeIconSmall);
-		window.draw(NavigationBar.RecentIcon);
-		window.display();
+		NavigationBar.Appear(Home.Background.getPosition().x, Home.Background.getSize().y + Home.Background.getPosition().y);
+		if (NavigationBar.BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			sf::Time *timer_02 = new sf::Time;
+			*timer_02 = sf::milliseconds(300);
+			sf::Clock *clock_02 = new sf::Clock;
+			clock_02->getElapsedTime();
+			Notifications.Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
+			while (clock_02->getElapsedTime().asMilliseconds() < timer_02->asMilliseconds())
+			{
+			}
+			delete timer_02, clock_02;
+		}
+		if (NavigationBar.HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			sf::Time *timer_02 = new sf::Time;
+			*timer_02 = sf::milliseconds(300);
+			sf::Clock *clock_02 = new sf::Clock;
+			clock_02->getElapsedTime();
+			Notifications.Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
+			while (clock_02->getElapsedTime().asMilliseconds() < timer_02->asMilliseconds())
+			{
+			}
+			delete timer_02, clock_02;
+		}
+
+		
+
+		// Setting Positions 
+
+		window->clear(sf::Color::White);
+		window->draw(Home.Background);
+		window->draw(Notifications.Background);
+		window->draw(NavigationBar.Bar);
+		window->draw(NavigationBar.BackIcon);
+		window->draw(NavigationBar.HomeIcon);
+		window->draw(NavigationBar.HomeIconSmall);
+		window->draw(NavigationBar.RecentIcon);
+		window->display();
 	}
 
 
