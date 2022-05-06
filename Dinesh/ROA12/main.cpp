@@ -132,7 +132,6 @@ public:
 	}
 
 };
-
 class Notification : public Tile
 {
 private:
@@ -157,124 +156,144 @@ public:
 };
 
 
+
+class ROA12
+{
+protected:
+	DefaultSystem DefaultSetting;
+	Tile *Home;
+	sf::Texture backgroundImage;
+	Navigation* NavigationBar;
+	Notification* Notifications;
+	sf::Vector2f PreviousPositionOfNotificationBackground;
+	sf::RenderWindow* window;
+
+public:
+	void initiate()
+	{
+		while (window->isOpen())
+		{
+			sf::Event event;
+			while (window->pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+					window->close();
+
+				// SWIPING FUNCTION
+				// Position will be set according to window not to whole screen.
+				sf::Vector2f MousePosition(sf::Mouse::getPosition(*window));
+				// Checking if MainBackground contain mouse or not.
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home->Background.getGlobalBounds().contains(MousePosition) && !NavigationBar->Bar.getGlobalBounds().contains(MousePosition))
+				{
+					int up = 1, down = 1;
+					sf::Vector2f temp(sf::Mouse::getPosition());
+					sf::Clock clock;
+					sf::Time time = sf::seconds(1);
+					while (clock.getElapsedTime().asSeconds() <= time.asSeconds() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						//cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
+						if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y > temp.y)
+						{
+							up++;
+						}
+						else if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y < temp.y)
+						{
+							down++;
+						}
+					}
+					cout << "UP: " << up << endl;
+					cout << "Down: " << down << endl;
+					if (up > down)
+					{
+						Notifications->Appear(Home->Background.getPosition().x, Home->Background.getPosition().y);
+						window->draw(Notifications->Background);
+						//Notifications.Background.setPosition(Home.Background.getPosition());
+					}
+					else
+					{
+						Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
+						// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
+					}
+				}
+
+
+				/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+				{
+					Home.Background.setPosition(Home.Background.getPosition().x - 10, Home.Background.getPosition().y);
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+				{
+					Home.Background.setPosition(Home.Background.getPosition().x + 10, Home.Background.getPosition().y);
+				}*/
+			}
+
+			NavigationBar->Appear(Home->Background.getPosition().x, Home->Background.getSize().y + Home->Background.getPosition().y);
+			if (NavigationBar->BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
+			}
+			if (NavigationBar->HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
+			}
+
+
+
+			// Setting Positions 
+
+			window->clear(sf::Color::White);
+			window->draw(Home->Background);
+			window->draw(Notifications->Background);
+			window->draw(NavigationBar->Bar);
+			window->draw(NavigationBar->BackIcon);
+			window->draw(NavigationBar->HomeIcon);
+			window->draw(NavigationBar->HomeIconSmall);
+			window->draw(NavigationBar->RecentIcon);
+			window->display();
+		}
+
+
+	}
+
+	// Constructor
+	ROA12()
+	{
+		window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
+		
+		// Setting Home Screen
+		Home = new Tile(0);
+		if (!backgroundImage.loadFromFile("Data/Wallpaper/Wallpaper_01.jpg"))
+		{
+			cout << "Unable to open background image.";
+		}
+		Home->Background.setSize(sf::Vector2f(window->getSize().y * 0.467 * 0.84, window->getSize().y * 0.84));
+		Home->Background.setTexture(&backgroundImage);
+		Home->Background.setPosition(window->getSize().x / 2 - Home->Background.getSize().x / 2, window->getSize().y / 2 - Home->Background.getSize().y / 2);
+		Home->Background.setOutlineThickness(8.f);
+		Home->Background.setOutlineColor(sf::Color::Black);
+	
+		// Setting NavigationBar
+		NavigationBar = new Navigation(Home->Background.getSize().x, Home->Background.getSize().y * 0.047);
+	
+		// Setting Notification
+		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y);
+		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - (Home->Background.getSize().y));
+		Notifications->Background.setFillColor(DefaultSetting.getBackgroundColor());
+		PreviousPositionOfNotificationBackground.x = Notifications->Background.getPosition().x;
+		PreviousPositionOfNotificationBackground.y = Notifications->Background.getPosition().y;
+
+	}
+
+	// Destructor
+	~ROA12()
+	{
+		delete window, Home, NavigationBar, Notifications;
+	}
+};
 int main()
 {
-	//	sf::RenderWindow window(sf::VideoMode(200, 200), "ROA12", sf::Style::Fullscreen);
-	// sf::RenderWindow window(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
-	sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
-
-	// Default Setting
-	DefaultSystem DefaultSetting;
-
-	// MAINBACKGROUND
-	Tile Home(0);
-	sf::Texture backgroundImage;
-	if (!backgroundImage.loadFromFile("Data/Wallpaper/Wallpaper_01.jpg"))
-	{
-		cout << "Unable to open background image.";
-	}
-	Home.Background.setSize(sf::Vector2f(window->getSize().y * 0.467 * 0.84, window->getSize().y * 0.84));
-	Home.Background.setTexture(&backgroundImage);
-	Home.Background.setPosition(window->getSize().x / 2 - Home.Background.getSize().x / 2, window->getSize().y / 2 - Home.Background.getSize().y / 2);
-	Home.Background.setOutlineThickness(8.f);
-	Home.Background.setOutlineColor(sf::Color::Black);
-
-	// NAVIGATION
-	Navigation NavigationBar(Home.Background.getSize().x, Home.Background.getSize().y * 0.047);
-
-	// Notification
-	Notification Notifications(1, Home.Background.getSize().x, Home.Background.getSize().y);
-	Notifications.Background.setPosition(Home.Background.getPosition().x, Home.Background.getPosition().y - (Home.Background.getSize().y));
-	Notifications.Background.setFillColor(DefaultSetting.getBackgroundColor());
-	sf::Vector2f PreviousPositionOfNotificationBackground(Notifications.Background.getPosition());
-	// cout << MainBackground.getPosition().x << " " << MainBackground.getPosition().y << endl;
-	// cout << shape.getPosition().x << " " << shape.getPosition().y << endl;
-
-
-	while (window->isOpen())
-	{
-		sf::Event event;
-		while (window->pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window->close();
-
-			// SWIPING FUNCTION
-			// Position will be set according to window not to whole screen.
-			sf::Vector2f MousePosition(sf::Mouse::getPosition(*window));
-			// Checking if MainBackground contain mouse or not.
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home.Background.getGlobalBounds().contains(MousePosition) && !NavigationBar.Bar.getGlobalBounds().contains(MousePosition))
-			{
-				int up = 1, down = 1;
-				sf::Vector2f temp(sf::Mouse::getPosition());
-				sf::Clock clock;
-				sf::Time time = sf::seconds(1);
-				while (clock.getElapsedTime().asSeconds() <= time.asSeconds() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-				{
-					//cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
-					if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y > temp.y)
-					{
-						up++;
-					}
-					else if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y < temp.y)
-					{
-						down++;
-					}
-				}
-				cout << "UP: " << up << endl;
-				cout << "Down: " << down << endl;
-				if (up > down)
-				{
-					Notifications.Appear(Home.Background.getPosition().x, Home.Background.getPosition().y);
-					window->draw(Notifications.Background);
-					//Notifications.Background.setPosition(Home.Background.getPosition());
-				}
-				else
-				{
-					Notifications.Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
-					// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
-				}
-			}
-
-
-			/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{
-				Home.Background.setPosition(Home.Background.getPosition().x - 10, Home.Background.getPosition().y);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			{
-				Home.Background.setPosition(Home.Background.getPosition().x + 10, Home.Background.getPosition().y);
-			}*/
-		}
-
-		NavigationBar.Appear(Home.Background.getPosition().x, Home.Background.getSize().y + Home.Background.getPosition().y);
-		if (NavigationBar.BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			Notifications.Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
-		}
-		if (NavigationBar.HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			Notifications.Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
-		}
-
-
-
-		// Setting Positions 
-
-		window->clear(sf::Color::White);
-		window->draw(Home.Background);
-		window->draw(Notifications.Background);
-		window->draw(NavigationBar.Bar);
-		window->draw(NavigationBar.BackIcon);
-		window->draw(NavigationBar.HomeIcon);
-		window->draw(NavigationBar.HomeIconSmall);
-		window->draw(NavigationBar.RecentIcon);
-		window->display();
-	}
-
-
-
-
+	ROA12 phone;
+	phone.initiate();
 
 	return 0;
 }
