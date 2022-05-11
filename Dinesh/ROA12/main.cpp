@@ -185,7 +185,10 @@ public:
 				// Checking if MainBackground contain mouse or not.
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home->Background.getGlobalBounds().contains(MousePosition) && !NavigationBar->Bar.getGlobalBounds().contains(MousePosition))
 				{
-					int up = 1, down = 1;
+					int* up = new int;
+					int* down = new int;
+					*up = 1;
+					*down = 1;
 					sf::Vector2f temp(sf::Mouse::getPosition());
 					sf::Clock clock;
 					sf::Time time = sf::seconds(1);
@@ -194,26 +197,27 @@ public:
 						//cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
 						if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y > temp.y)
 						{
-							up++;
+							(*up)++;
 						}
 						else if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y < temp.y)
 						{
-							down++;
+							(* down)++;
 						}
 					}
-					cout << "UP: " << up << endl;
-					cout << "Down: " << down << endl;
-					if (up > down)
+					cout << "UP: " << *up << endl;
+					cout << "Down: " << *down << endl;
+					if (*up > *down)
 					{
 						Notifications->Appear(Home->Background.getPosition().x, Home->Background.getPosition().y);
 						window->draw(Notifications->Background);
 						//Notifications.Background.setPosition(Home.Background.getPosition());
 					}
-					else
+					else if (*down > *up)
 					{
 						Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
 						// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
 					}
+					delete up, down;
 				}
 
 
