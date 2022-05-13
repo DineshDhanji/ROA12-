@@ -1,11 +1,54 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <iterator>
+
 using namespace std;
 
 // GLOBAL SCOPE
 int WhoIsActiveNow = 0;
-int arr[2] = { 0, 1 };
+int RecentCount = 1;
+int *RecentArray = new int[RecentCount];
 
+void changeRecent(int ID)
+{
+	bool *found = new bool;
+	*found = 0;
+	for (int i = 0; i < RecentCount; i++)
+	{
+		if (ID == RecentArray[i])
+		{
+			*found = 1;
+			break;
+		}
+	}
+	if (*found != 1)
+	{
+		int *temp = new int[RecentCount];
+		for (int i = 0; i < RecentCount; i++)
+		{
+			temp[i] = RecentArray[i];
+		}
+		RecentCount++;
+		RecentArray = new int[RecentCount];
+		for (int i = 0; i < RecentCount - 1; i++)
+		{
+			RecentArray[i] = temp[i];
+		}
+		RecentArray[RecentCount - 1] = ID;
+		delete temp;
+
+
+		cout << "arr  ";
+		for (int i = 0; i < RecentCount; i++)
+		{
+			cout << RecentArray[i] << ", ";
+		}
+		cout << endl;
+	}
+	delete found;
+
+
+}
 
 // CLASSES
 class DefaultSystem
@@ -70,10 +113,16 @@ class Tile
 public:
 	sf::RectangleShape Background;
 	int ID;
-
+	bool IsActive;
 	// CONSTRUCTOR(S)
 	Tile(int ID) {
 		this->ID = ID;
+		setIsActive(0);
+	}
+	Tile(int ID, bool IsActive)
+	{
+		this->ID = ID;
+		this->IsActive = IsActive;
 	}
 	// DESTRUCTOR(S)
 	~Tile()
@@ -84,10 +133,19 @@ public:
 	{
 		this->ID = ID;
 	}
+	void setIsActive(bool IsActive)
+	{
+		this->IsActive = IsActive;
+	}
+
 	// GETTER(S)
 	int getID(void)
 	{
 		return ID;
+	}
+	bool getIsActive(void)
+	{
+		return IsActive;
 	}
 };
 
@@ -99,6 +157,10 @@ public:
 	// Function(s)
 	void Appear(float x, float y)
 	{
+		setIsActive(1);
+
+		changeRecent(getID());
+
 		Background.setPosition(x, y);
 		WhoIsActiveNow = getID();
 	}
@@ -135,7 +197,7 @@ public:
 	}
 
 	// Constructor
-	Notification(int ID, float x, float y) :Tile(ID)
+	Notification(int ID, float x, float y, bool IsActive = 0) :Tile(ID, IsActive)
 	{
 		Background.setSize(sf::Vector2f(x, y));
 	}
@@ -209,10 +271,11 @@ public:
 	Tile *AppBackground;
 	sf::Text AppName;
 
-	// Function(s)
-	virtual void Appear() = 0;
-	virtual void Disappear() = 0;
 
+	// Function(s)
+	virtual void Appear(sf::Vector2f, sf::RenderWindow*) = 0;
+	virtual int Disappear() = 0;
+	virtual void AppearanceAnimation(sf::RenderWindow*) = 0;
 	// Setter(s)
 	void setAppName(string AppName)
 	{
@@ -248,9 +311,54 @@ class TempApp : public App
 {
 public:
 	// Function(s)
-	void Appear(){}
-	void Disappear(){}
+	void Appear(sf::Vector2f HomePosition, sf::RenderWindow* window)
+	{
+		AppBackground->setIsActive(2);
+		changeRecent(AppBackground->getID());
+		AppBackground->Background.setSize(sf::Vector2f(window->getSize().y * 0.467 * 0.84, window->getSize().y * 0.84));
+		AppBackground->Background.setPosition(HomePosition);
+		WhoIsActiveNow = AppBackground->getID();
+		AppearanceAnimation(window);
+	}
+	int Disappear()
+	{
+		return 1;
+	}
+	void AppearanceAnimation(sf::RenderWindow* window)
+	{
+		sf::RectangleShape *Cover = new sf::RectangleShape;
+		sf::RectangleShape *CoverPicture = new sf::RectangleShape;
 
+		Cover->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y *0.047));
+		CoverPicture->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y *0.047));
+		sf::Texture *texture = new sf::Texture;
+		if (!texture->loadFromFile("Data/Icons/NotesIcon.jpg"))
+		{
+			cout << "Unable to open the cover ofr the notes." << endl;
+		}
+		Cover->setFillColor(sf::Color(254, 177, 59));
+		CoverPicture->setTexture(texture);
+		CoverPicture->setScale(1.0f, 0.5f);
+		Cover->setPosition(AppBackground->Background.getPosition().x, AppBackground->Background.getPosition().y);
+		CoverPicture->setPosition(AppBackground->Background.getPosition().x, AppBackground->Background.getPosition().y + Cover->getSize().y / 4.f);
+
+
+
+		sf::Time *timer = new sf::Time;
+		*timer = sf::milliseconds(1000);
+		sf::Clock *clock = new sf::Clock;
+		while (clock->getElapsedTime().asMilliseconds() < timer->asMilliseconds())
+		{
+			cout << Cover->getPosition().x << endl;
+			cout << Cover->getPosition().y << endl;
+			window->draw(*Cover);
+			window->draw(*CoverPicture);
+			window->display();
+			//cout << "wait ";
+		}
+
+		//delete Cover, timer, clock;
+	}
 	// Constructor(s)
 	TempApp(float AppIconSize) : App(AppIconSize, "Notes")
 	{
@@ -297,8 +405,9 @@ public:
 				// Position will be set according to window not to whole screen.
 				sf::Vector2f MousePosition(sf::Mouse::getPosition(*window));
 				// Checking if MainBackground contain mouse or not.
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home->Background.getGlobalBounds().contains(MousePosition) && !NavigationBar->Bar.getGlobalBounds().contains(MousePosition))
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home->Background.getGlobalBounds().contains(MousePosition) && !NavigationBar->Bar.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1 && !App_01->Icon.getGlobalBounds().contains(MousePosition))
 				{
+
 					int* up = new int;
 					int* down = new int;
 					*up = 1;
@@ -324,18 +433,21 @@ public:
 					{
 						Notifications->Appear(Home->Background.getPosition().x, Home->Background.getPosition().y);
 						window->draw(Notifications->Background);
+						Home->setIsActive(0);
+
 						//Notifications.Background.setPosition(Home.Background.getPosition());
 					}
 					else if (*down > *up)
 					{
 						Notifications->Disappear();
+						Home->setIsActive(1);
 						// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
 					}
 					delete up, down;
 				}
-				else if (App_01->Icon.getGlobalBounds().contains(MousePosition))
+				else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && App_01->Icon.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1)
 				{
-					cout << "App Opened" << endl;
+					App_01->Appear(Home->Background.getPosition(), window);
 				}
 
 
@@ -390,6 +502,17 @@ public:
 		if (*tempId == 1)
 		{
 			Notifications->Disappear();
+			Home->setIsActive(1);
+		}
+		else if (*tempId == 2)
+		{
+			int *temp = new int;
+			if (App_01->Disappear() == 0)
+			{
+				Home->setIsActive(1);
+			}
+
+
 		}
 		delete tempId;
 	}
@@ -401,7 +524,8 @@ public:
 		//window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Fullscreen);
 
 		// Setting Home Screen
-		Home = new Tile(0);
+		RecentArray[0] = 0;
+		Home = new Tile(0, 1);
 		if (!backgroundImage.loadFromFile("Data/Wallpaper/Wallpaper_01.jpg"))
 		{
 			cout << "Unable to open background image.";
@@ -412,11 +536,12 @@ public:
 		Home->Background.setOutlineThickness(8.f);
 		Home->Background.setOutlineColor(sf::Color::Black);
 
+
 		// Setting NavigationBar
 		NavigationBar = new Navigation(Home->Background.getSize().x, Home->Background.getSize().y * 0.047);
 
 		// Setting Notification
-		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y);
+		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y, 0);
 		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - (Home->Background.getSize().y));
 		Notifications->Background.setFillColor(DefaultSetting.getBackgroundColor());
 		Notifications->setPreviousPosition(Notifications->Background.getPosition());
