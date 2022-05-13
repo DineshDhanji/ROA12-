@@ -207,7 +207,6 @@ public:
 	sf::CircleShape Icon;
 	sf::Texture textureIcon;
 	Tile *AppBackground;
-	float AppIconSize;
 	sf::Text AppName;
 
 	// Function(s)
@@ -215,27 +214,12 @@ public:
 	virtual void Disappear() = 0;
 
 	// Setter(s)
-	void setAppSize(float AppIconSize)
-	{
-		if (AppIconSize < 1)
-		{
-			cout << "Error! the given app icon size is invalid." << endl;
-		}
-		else
-		{
-			this->AppIconSize = AppIconSize;
-		}
-	}
 	void setAppName(string AppName)
 	{
 		this->AppName.setString(AppName);
 	}
 
 	// Getter(s)
-	float getAppSize()
-	{
-		return AppIconSize;
-	}
 	string getAppName()
 	{
 		return AppName.getString();
@@ -244,7 +228,7 @@ public:
 	// Constructor(s)
 	App(float AppIconSize, string AppName)
 	{
-		setAppSize(AppIconSize);
+		Icon.setRadius(AppIconSize);
 		setAppName(AppName);
 		this->AppName.setCharacterSize(15);
 		this->AppName.setFillColor(sf::Color::White);
@@ -268,7 +252,7 @@ public:
 	void Disappear(){}
 
 	// Constructor(s)
-	TempApp() : App(3.3, "Notes")
+	TempApp(float AppIconSize) : App(AppIconSize, "Notes")
 	{
 		AppBackground = new Tile(2);
 		if (!textureIcon.loadFromFile("Data/Icons/NotesIcon.jpg"))
@@ -276,7 +260,7 @@ public:
 			cout << "Unable to open the App icon of Notes.";
 		}
 		Icon.setTexture(&textureIcon);
-		
+
 	}
 
 	// Constructor(s)
@@ -349,6 +333,10 @@ public:
 					}
 					delete up, down;
 				}
+				else if (App_01->Icon.getGlobalBounds().contains(MousePosition))
+				{
+					cout << "App Opened" << endl;
+				}
 
 
 				/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -410,6 +398,7 @@ public:
 	ROA12()
 	{
 		window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
+		//window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Fullscreen);
 
 		// Setting Home Screen
 		Home = new Tile(0);
@@ -433,10 +422,9 @@ public:
 		Notifications->setPreviousPosition(Notifications->Background.getPosition());
 
 		// Setting App_01
-		App_01 = new TempApp;
-		App_01->Icon.setRadius(window->getSize().x * App_01->getAppSize() / 100.0);
+		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.9f);
 		App_01->AppName.setFont(DefaultSetting.getSystemFonts());
-		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() -  App_01->AppName.getGlobalBounds().height);
+		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
 		App_01->AppName.setOrigin(App_01->AppName.getGlobalBounds().width / 2.f, App_01->AppName.getGlobalBounds().height / 2.f);
 		App_01->AppName.setPosition(App_01->Icon.getPosition().x + (App_01->Icon.getRadius() / 2.f) * 2.f, App_01->Icon.getPosition().y + App_01->Icon.getRadius() * 215.f / 100.f);
 
