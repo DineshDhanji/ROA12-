@@ -18,10 +18,10 @@ void changeRecent(int ID)
 		if (ID == RecentArray[i])
 		{
 			*found = 1;
-			int *j = new int(0);
+			int *j = new int(i);
 			int *temp = new int(0);
 
-			while (*j != RecentCount-1)
+			while (*j != RecentCount - 1)
 			{
 				*temp = RecentArray[(*j) + 1];
 				RecentArray[(*j) + 1] = ID;
@@ -525,6 +525,27 @@ public:
 				else if (NavigationBar->RecentIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && WhoIsActiveNow != 2)
 				{
 					Deactivate(WhoIsActiveNow);
+					Notifications->Disappear();
+					if (RecentArray[RecentCount - 1] == 1)
+					{
+						
+						int *temp = new int[RecentCount - 1];
+						for (int i = 0; i < RecentCount - 1; i++)
+						{
+							if (RecentArray[i] != 1)
+							{
+								temp[i] = RecentArray[i];
+
+							}
+						}
+						RecentCount--;
+						RecentArray = new int[RecentCount];
+						for (int i = 0; i < RecentCount; i++)
+						{
+							RecentArray[i] = temp[i];
+						}
+						delete temp;
+					}
 					Recents->Appear(Home->Background.getPosition(), DefaultSetting);
 					Activate(WhoIsActiveNow);
 				}
