@@ -1,0 +1,119 @@
+﻿  main.cpp
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(74,104): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(74,77): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(81,100): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(91,114): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(91,58): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(93,97): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(94,99): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(97,102): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(98,103): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(119,146): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(119,75): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(126,131): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(126,63): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(128,96): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(128,69): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(134,88): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(138,68): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(155,130): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(155,73): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(158,68): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(159,65): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(175,129): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(175,73): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(182,90): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\ROA12\main.cpp(187,94): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  ROA12.vcxproj -> C:\Users\Ameer Hamza\Desktop\ROA12--mainOLD\Dinesh\Debug\ROA12.exe
