@@ -240,23 +240,23 @@ public:
 	}
 
 	void DrawMe(sf::RenderWindow* window){
-		int *tempCount = new int(0);
-		for (int i = 0; i < RecentCount; i++)
-		{
-			if (RecentArray[i] != 0 && RecentArray[i] != 1 && RecentArray[i] != 2)
-			{
-				(*tempCount)++;
-			}
-		}
-
-		sf::RectangleShape* Box = new sf::RectangleShape[*tempCount];
-		for (int i = 0; i < *tempCount; i++)
-		{
-			Box[i].setSize(sf::Vector2f(Background.getSize().x, Background.getSize().y*0.047));
-			Box[i].setFillColor(sf::Color::Red);
-			Box[i].setPosition(Background.getPosition());
-			window->draw(Box[i]);
-		}
+		// int *tempCount = new int(0);
+		// for (int i = 0; i < RecentCount; i++)
+		// {
+		// 	if (RecentArray[i] != 0 && RecentArray[i] != 1 && RecentArray[i] != 2)
+		// 	{
+		// 		(*tempCount)++;
+		// 	}
+		// }
+		// 
+		// sf::RectangleShape* Box = new sf::RectangleShape[*tempCount];
+		// for (int i = 0; i < *tempCount; i++)
+		// {
+		// 	Box[i].setSize(sf::Vector2f(Background.getSize().x, Background.getSize().y*0.047));
+		// 	Box[i].setFillColor(sf::Color::Red);
+		// 	Box[i].setPosition(Background.getPosition());
+		// 	window->draw(Box[i]);
+		// }
 
 		window->draw(Background);
 
@@ -525,23 +525,6 @@ public:
 				else if (NavigationBar->RecentIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && WhoIsActiveNow != 2)
 				{
 					Deactivate(WhoIsActiveNow);
-					Notifications->Disappear();
-					int *temp = new int[RecentCount - 1];
-					for (int i = 0; i < RecentCount; i++)
-					{
-						if (RecentArray[i] != 1)
-						{
-							temp[i] = RecentArray[i];
-
-						}
-					}
-					RecentCount--;
-					RecentArray = new int[RecentCount];
-					for (int i = 0; i < RecentCount; i++)
-					{
-						RecentArray[i] = temp[i];
-					}
-					delete temp;
 					Recents->Appear(Home->Background.getPosition(), DefaultSetting);
 					Activate(WhoIsActiveNow);
 				}
