@@ -1,11 +1,59 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <iterator>
+
 using namespace std;
 
 // GLOBAL SCOPE
 int WhoIsActiveNow = 0;
-int arr[2] = { 0, 1 };
+int RecentCount = 1;
+int *RecentArray = new int[RecentCount];
 
+void changeRecent(int ID)
+{
+	bool *found = new bool;
+	*found = 0;
+	for (int i = 0; i < RecentCount; i++)
+	{
+		if (ID == RecentArray[i])
+		{
+			*found = 1;
+			int *temp = new int;
+			*temp = RecentArray[i];
+			RecentArray[i] = RecentArray[RecentCount - 1];
+			RecentArray[RecentCount - 1] = *temp;
+			delete temp;
+			break;
+		}
+	}
+	if (*found != 1)
+	{
+		int *temp = new int[RecentCount];
+		for (int i = 0; i < RecentCount; i++)
+		{
+			temp[i] = RecentArray[i];
+		}
+		RecentCount++;
+		RecentArray = new int[RecentCount];
+		for (int i = 0; i < RecentCount - 1; i++)
+		{
+			RecentArray[i] = temp[i];
+		}
+		RecentArray[RecentCount - 1] = ID;
+		delete temp;
+
+
+	}
+	cout << "arr  ";
+	for (int i = 0; i < RecentCount; i++)
+	{
+		cout << RecentArray[i] << ", ";
+	}
+	cout << endl;
+	delete found;
+
+
+}
 
 // CLASSES
 class DefaultSystem
@@ -22,7 +70,8 @@ public:
 	{
 		FontColor = sf::Color::Black;
 		//BackgroundColor = sf::Color::White;
-		BackgroundColor = sf::Color(48, 49, 44, 120);
+		BackgroundColor = sf::Color(255, 255, 255, 200);
+		// BackgroundColor = sf::Color(48, 49, 44, 120);
 		DarkTheme = 0;
 		if (!font.loadFromFile("Data/Fonts/ProductSans-Regular.ttf"))
 		{
@@ -76,7 +125,7 @@ public:
 		this->ID = ID;
 		setIsActive(0);
 	}
-	Tile(int ID, bool IsActive) 
+	Tile(int ID, bool IsActive)
 	{
 		this->ID = ID;
 		this->IsActive = IsActive;
@@ -94,7 +143,7 @@ public:
 	{
 		this->IsActive = IsActive;
 	}
-	
+
 	// GETTER(S)
 	int getID(void)
 	{
@@ -114,7 +163,10 @@ public:
 	// Function(s)
 	void Appear(float x, float y)
 	{
-		setIsActive(1);
+		setIsActive(true);
+
+		changeRecent(getID());
+
 		Background.setPosition(x, y);
 		WhoIsActiveNow = getID();
 	}
@@ -159,6 +211,35 @@ public:
 	// Destructor
 	~Notification()
 	{}
+};
+
+class Recent : public Tile
+{
+public:
+	void Appear(sf::Vector2f Position, DefaultSystem* Temp)
+	{
+		//Background.setFillColor(Temp->getBackgroundColor());
+		Background.setFillColor(sf::Color(180, 140, 245, 120));
+		WhoIsActiveNow = 2;
+		setIsActive(true);
+		Background.setPosition(Position);
+	}
+
+
+	void Disappear(){
+		Background.setPosition(Background.getPosition().x, Background.getPosition().y + Background.getSize().y);
+		WhoIsActiveNow = RecentArray[RecentCount - 1];
+		setIsActive(false);
+	}
+
+	// Constructor
+	Recent(int ID, sf::Vector2f Size) :Tile(ID, 0) // 0 indicates that currently recent is active
+	{
+		Background.setSize(sf::Vector2f(Size.x, Size.y - Size.y* 0.047));
+	}
+
+	// Destructor
+	~Recent(){}
 };
 
 class Navigation
@@ -225,10 +306,11 @@ public:
 	Tile *AppBackground;
 	sf::Text AppName;
 
-	// Function(s)
-	virtual void Appear() = 0;
-	virtual void Disappear() = 0;
 
+	// Function(s)
+	virtual void Appear(sf::Vector2f, sf::RenderWindow*) = 0;
+	virtual int Disappear() = 0;
+	virtual void AppearanceAnimation(sf::RenderWindow*) = 0;
 	// Setter(s)
 	void setAppName(string AppName)
 	{
@@ -264,13 +346,56 @@ class TempApp : public App
 {
 public:
 	// Function(s)
-	void Appear(){}
-	void Disappear(){}
+	void Appear(sf::Vector2f HomePosition, sf::RenderWindow* window)
+	{
+		AppBackground->setIsActive(true);
+		changeRecent(AppBackground->getID());
+		AppBackground->Background.setSize(sf::Vector2f(window->getSize().y * 0.467 * 0.84, window->getSize().y * 0.84));
+		AppBackground->Background.setPosition(HomePosition);
+		WhoIsActiveNow = AppBackground->getID();
+		AppearanceAnimation(window);
+	}
+	int Disappear()
+	{
+		return 1;
+	}
+	void AppearanceAnimation(sf::RenderWindow* window)
+	{
+		sf::RectangleShape *Cover = new sf::RectangleShape;
+		sf::RectangleShape *CoverPicture = new sf::RectangleShape;
 
+		Cover->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y *0.047));
+		CoverPicture->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y *0.047));
+		sf::Texture *texture = new sf::Texture;
+		if (!texture->loadFromFile("Data/Icons/NotesIcon.jpg"))
+		{
+			cout << "Unable to open the cover ofr the notes." << endl;
+		}
+		Cover->setFillColor(sf::Color(254, 177, 59));
+		CoverPicture->setTexture(texture);
+		CoverPicture->setScale(1.0f, 0.5f);
+		Cover->setPosition(AppBackground->Background.getPosition().x, AppBackground->Background.getPosition().y);
+		CoverPicture->setPosition(AppBackground->Background.getPosition().x, AppBackground->Background.getPosition().y + Cover->getSize().y / 4.f);
+
+
+
+		sf::Time *timer = new sf::Time;
+		*timer = sf::milliseconds(1000);
+		sf::Clock *clock = new sf::Clock;
+		while (clock->getElapsedTime().asMilliseconds() < timer->asMilliseconds())
+		{
+			window->draw(*Cover);
+			window->draw(*CoverPicture);
+			window->display();
+			//cout << "wait ";
+		}
+
+		//delete Cover, timer, clock;
+	}
 	// Constructor(s)
 	TempApp(float AppIconSize) : App(AppIconSize, "Notes")
 	{
-		AppBackground = new Tile(2);
+		AppBackground = new Tile(3);
 		if (!textureIcon.loadFromFile("Data/Icons/NotesIcon.jpg"))
 		{
 			cout << "Unable to open the App icon of Notes.";
@@ -288,11 +413,12 @@ public:
 class ROA12
 {
 protected:
-	DefaultSystem DefaultSetting;
+	DefaultSystem* DefaultSetting;
 	Tile *Home;
 	sf::Texture backgroundImage;
 	Notification* Notifications;
 	Navigation* NavigationBar;
+	Recent* Recents;
 
 	TempApp *App_01;
 
@@ -348,34 +474,29 @@ public:
 					else if (*down > *up)
 					{
 						Notifications->Disappear();
+						Home->setIsActive(1);
 						// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
 					}
 					delete up, down;
 				}
 				else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && App_01->Icon.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1)
 				{
-					cout << "App Opened" << endl;
+					App_01->Appear(Home->Background.getPosition(), window);
 				}
-
-
-				/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+				else if (NavigationBar->BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 				{
-				Home.Background.setPosition(Home.Background.getPosition().x - 10, Home.Background.getPosition().y);
+					BackButton();
+					//Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
 				}
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+				else if (NavigationBar->RecentIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && WhoIsActiveNow != 2)
 				{
-				Home.Background.setPosition(Home.Background.getPosition().x + 10, Home.Background.getPosition().y);
-				}*/
+					Recents->Appear(Home->Background.getPosition(), DefaultSetting);
+				}
 			}
 
 			// Setting Positions
 			NavigationBar->Appear(Home->Background.getPosition().x, Home->Background.getSize().y + Home->Background.getPosition().y);
 
-			if (NavigationBar->BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				BackButton();
-				//Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
-			}
 			// if (NavigationBar->HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			// {
 			// 	Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
@@ -395,8 +516,11 @@ public:
 			window->draw(NavigationBar->HomeIcon);
 			window->draw(NavigationBar->HomeIconSmall);
 			window->draw(NavigationBar->RecentIcon);
+			window->draw(Recents->Background);
+
 			window->display();
 		}
+	
 
 
 	}
@@ -409,17 +533,35 @@ public:
 		if (*tempId == 1)
 		{
 			Notifications->Disappear();
+			Home->setIsActive(1);
+		}
+		else if (*tempId == 3)
+		{
+			if (App_01->Disappear() == 0)
+			{
+				Home->setIsActive(1);
+			}
+		}
+		else if (*tempId == 2)
+		{
+			Recents->Disappear();
+			Home->setIsActive(1);
+
 		}
 		delete tempId;
 	}
-
+	void RecentButton(){}
 	// Constructor
 	ROA12()
 	{
 		window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Default);
 		//window = new sf::RenderWindow(sf::VideoMode(800, 800), "ROA12", sf::Style::Fullscreen);
 
+		// Setting Default System
+		DefaultSetting = new DefaultSystem;
+
 		// Setting Home Screen
+		RecentArray[0] = 0;
 		Home = new Tile(0, 1);
 		if (!backgroundImage.loadFromFile("Data/Wallpaper/Wallpaper_01.jpg"))
 		{
@@ -431,18 +573,24 @@ public:
 		Home->Background.setOutlineThickness(8.f);
 		Home->Background.setOutlineColor(sf::Color::Black);
 
+
 		// Setting NavigationBar
 		NavigationBar = new Navigation(Home->Background.getSize().x, Home->Background.getSize().y * 0.047);
 
 		// Setting Notification
 		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y, 0);
 		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - (Home->Background.getSize().y));
-		Notifications->Background.setFillColor(DefaultSetting.getBackgroundColor());
+		Notifications->Background.setFillColor(DefaultSetting->getBackgroundColor());
 		Notifications->setPreviousPosition(Notifications->Background.getPosition());
+
+		// Setting Recent
+		Recents = new Recent(2, Home->Background.getSize());
+		Recents->Background.setPosition(Notifications->Background.getPosition());
+		Recents->Background.setFillColor(DefaultSetting->getBackgroundColor());
 
 		// Setting App_01
 		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.9f);
-		App_01->AppName.setFont(DefaultSetting.getSystemFonts());
+		App_01->AppName.setFont(DefaultSetting->getSystemFonts());
 		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
 		App_01->AppName.setOrigin(App_01->AppName.getGlobalBounds().width / 2.f, App_01->AppName.getGlobalBounds().height / 2.f);
 		App_01->AppName.setPosition(App_01->Icon.getPosition().x + (App_01->Icon.getRadius() / 2.f) * 2.f, App_01->Icon.getPosition().y + App_01->Icon.getRadius() * 215.f / 100.f);
@@ -453,7 +601,7 @@ public:
 	// Destructor
 	~ROA12()
 	{
-		delete window, Home, NavigationBar, Notifications, App_01;
+		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01;
 	}
 };
 
