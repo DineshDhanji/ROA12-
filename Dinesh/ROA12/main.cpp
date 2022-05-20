@@ -240,23 +240,23 @@ public:
 	}
 
 	void DrawMe(sf::RenderWindow* window){
-		// int *tempCount = new int(0);
-		// for (int i = 0; i < RecentCount; i++)
-		// {
-		// 	if (RecentArray[i] != 0 && RecentArray[i] != 1 && RecentArray[i] != 2)
-		// 	{
-		// 		(*tempCount)++;
-		// 	}
-		// }
-		// 
-		// sf::RectangleShape* Box = new sf::RectangleShape[*tempCount];
-		// for (int i = 0; i < *tempCount; i++)
-		// {
-		// 	Box[i].setSize(sf::Vector2f(Background.getSize().x, Background.getSize().y*0.047));
-		// 	Box[i].setFillColor(sf::Color::Red);
-		// 	Box[i].setPosition(Background.getPosition());
-		// 	window->draw(Box[i]);
-		// }
+		int *tempCount = new int(0);
+		for (int i = 0; i < RecentCount; i++)
+		{
+			if (RecentArray[i] != 0 && RecentArray[i] != 1 && RecentArray[i] != 2)
+			{
+				(*tempCount)++;
+			}
+		}
+		
+		sf::RectangleShape* Box = new sf::RectangleShape[*tempCount];
+		for (int i = 0; i < *tempCount; i++)
+		{
+			Box[i].setSize(sf::Vector2f(Background.getSize().x, Background.getSize().y*0.047));
+			Box[i].setFillColor(sf::Color::Red);
+			Box[i].setPosition(Background.getPosition());
+			window->draw(Box[i]);
+		}
 
 		window->draw(Background);
 
@@ -378,17 +378,14 @@ public:
 	// Function(s)
 	void Appear(sf::Vector2f HomePosition, sf::RenderWindow* window)
 	{
-		AppBackground->setIsActive(true);
 		changeRecent(AppBackground->getID());
 		AppBackground->Background.setSize(sf::Vector2f(window->getSize().y * 0.467 * 0.84, window->getSize().y * 0.84));
-		AppBackground->Background.setPosition(HomePosition);
-		WhoIsActiveNow = AppBackground->getID();
+		AppBackground->Background.setPosition(HomePosition);;
 		AppearanceAnimation(window);
-		Disappear();
 	}
 	int Disappear()
 	{
-		return 1;
+		return 0;
 	}
 	void AppearanceAnimation(sf::RenderWindow* window)
 	{
@@ -516,6 +513,7 @@ public:
 				{
 					Deactivate(WhoIsActiveNow);
 					App_01->Appear(Home->Background.getPosition(), window);
+					Activate(WhoIsActiveNow);
 				}
 				else if (NavigationBar->BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 				{
