@@ -526,26 +526,22 @@ public:
 				{
 					Deactivate(WhoIsActiveNow);
 					Notifications->Disappear();
-					if (RecentArray[RecentCount - 1] == 1)
+					int *temp = new int[RecentCount - 1];
+					for (int i = 0; i < RecentCount; i++)
 					{
-						
-						int *temp = new int[RecentCount - 1];
-						for (int i = 0; i < RecentCount - 1; i++)
+						if (RecentArray[i] != 1)
 						{
-							if (RecentArray[i] != 1)
-							{
-								temp[i] = RecentArray[i];
+							temp[i] = RecentArray[i];
 
-							}
 						}
-						RecentCount--;
-						RecentArray = new int[RecentCount];
-						for (int i = 0; i < RecentCount; i++)
-						{
-							RecentArray[i] = temp[i];
-						}
-						delete temp;
 					}
+					RecentCount--;
+					RecentArray = new int[RecentCount];
+					for (int i = 0; i < RecentCount; i++)
+					{
+						RecentArray[i] = temp[i];
+					}
+					delete temp;
 					Recents->Appear(Home->Background.getPosition(), DefaultSetting);
 					Activate(WhoIsActiveNow);
 				}
@@ -597,13 +593,46 @@ public:
 		{
 			Deactivate(Notifications->getID());
 			Notifications->Disappear();
-			Activate(RecentArray[RecentCount - 2]);
+
+			int *temp = new int[RecentCount - 1];
+			for (int i = 0; i < RecentCount; i++)
+			{
+				if (RecentArray[i] != 1)
+				{
+					temp[i] = RecentArray[i];
+
+				}
+			}
+			RecentCount--;
+			RecentArray = new int[RecentCount];
+			for (int i = 0; i < RecentCount; i++)
+			{
+				RecentArray[i] = temp[i];
+			}
+			delete temp;
+
+			Activate(RecentArray[RecentCount - 1]);
 		}
 		else if (*tempId == 2)
 		{
 			Deactivate(Recents->getID());
 			Recents->Disappear();
-			Activate(RecentArray[RecentCount - 2]);
+			int *temp = new int[RecentCount - 1];
+			for (int i = 0; i < RecentCount; i++)
+			{
+				if (RecentArray[i] != 2)
+				{
+					temp[i] = RecentArray[i];
+				}
+			}
+			RecentCount--;
+			RecentArray = new int[RecentCount];
+			for (int i = 0; i < RecentCount; i++)
+			{
+				RecentArray[i] = temp[i];
+			}
+			delete temp;
+			Activate(RecentArray[RecentCount - 1]);
 
 		}
 		else if (*tempId == 3)
