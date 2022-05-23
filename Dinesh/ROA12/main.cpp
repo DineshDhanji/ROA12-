@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <ctime>
+#include <sstream>
 #include <iterator>
 
 using namespace std;
@@ -73,16 +74,19 @@ class DefaultSystem
 public:
 	bool DarkTheme;
 	sf::Color FontColor;
+	sf::Color ThemeColor;
 	sf::Color BackgroundColor;
 	sf::Color BackgroundTileColor;
 	sf::Font font;
-	time_t *MyTime;
+	sf::Font BoldFont;
+	time_t MyTime;
 
 public:
 	// CONSTRUCTOR(S)
 	DefaultSystem()
 	{
 		FontColor = sf::Color::Black;
+		ThemeColor = sf::Color(233, 29, 64);
 		//BackgroundColor = sf::Color::White;
 		BackgroundColor = sf::Color(255, 255, 255, 200);
 		// BackgroundColor = sf::Color(48, 49, 44, 120);
@@ -91,8 +95,12 @@ public:
 		{
 			cout << "Unable to load the fonts from file.";
 		}
+		if (!BoldFont.loadFromFile("Data/Fonts/ProductSans-Medium.ttf"))
+		{
+			cout << "Unable to load the bold fonts from file.";
+		}
 		BackgroundTileColor = sf::Color::White;
-		MyTime = new time_t;
+		MyTime = time(0);
 	}
 	// DESTRUCTOR(S)
 	~DefaultSystem() {}
@@ -496,9 +504,9 @@ protected:
 	sf::RenderWindow* window;
 
 	// Google Bar
-	sf::Texture *GoogleGTexture;
+	sf::Texture* GoogleGTexture;
 	sf::CircleShape* GoogleG;
-	sf::CircleShape *GoogleGBackground;
+	sf::CircleShape* GoogleGBackground;
 	sf::RectangleShape* GoogleSearch;
 	sf::Texture* GoogleMicTexture;
 	sf::CircleShape* GoogleMic;
@@ -506,7 +514,10 @@ protected:
 
 	// Time Clock
 	sf::Text* TimeWidget;
-
+	sf::Text* DateDayYear;
+	sf::Text* ClockSecond;
+	/*sf::Texture* TimeTexture;
+	sf::RectangleShape* TimeRect;*/
 public:
 	void initiate()
 	{
@@ -601,7 +612,9 @@ public:
 			}*/
 			/*cout << GoogleG->getPosition().x << " " << GoogleG->getPosition().y;
 			*/
-			cout << "" << TimeWidget->getPosition().x << " " << TimeWidget->getPosition().y << endl;
+			//	cout << "" << TimeWidget->getPosition().x << " " << TimeWidget->getPosition().y << endl;
+			SetClockWidget();
+
 			window->clear(sf::Color::White);
 			window->draw(Home->Background);
 			window->draw(*GoogleSearch);
@@ -610,6 +623,10 @@ public:
 			window->draw(*GoogleG);
 			window->draw(*GoogleMic);
 			window->draw(*TimeWidget);
+			//window->draw(*TimeRect);
+			window->draw(*DateDayYear);
+			window->draw(*ClockSecond);
+
 			window->draw(App_01->Icon);
 			window->draw(App_01->AppName);
 			window->draw(Notifications->Background);
@@ -618,8 +635,8 @@ public:
 			window->draw(NavigationBar->HomeIcon);
 			window->draw(NavigationBar->HomeIconSmall);
 			window->draw(NavigationBar->RecentIcon);
-		//	window->draw(*GoogleGBackground);
-	
+			//	window->draw(*GoogleGBackground);
+
 
 
 			Recents->DrawMe(window);
@@ -764,7 +781,34 @@ public:
 		changeRecent(ID);
 		delete temp;
 	}
-	
+	void SetClockWidget()
+	{
+		DefaultSetting->MyTime = time(0);
+		tm* now = localtime(&DefaultSetting->MyTime);
+		stringstream* s1 = new stringstream;
+		stringstream* s2 = new stringstream;
+		stringstream* s3 = new stringstream;
+
+		string* a = new string;
+		string* b = new string;
+		string* c = new string;
+		string* d = new string;
+		string* e = new string;
+		*a += (now->tm_hour < 10) ? "0" : "";
+		*s1 << now->tm_hour;
+		*s1 >> *b;
+		*c += (now->tm_min < 10) ? "0" : "";
+		*s2 << now->tm_min;
+		*s2 >> *d;
+		*e += (now->tm_sec < 10) ? "0" : "";
+		*s3 << now->tm_sec;
+		*s3 >> *e;
+		TimeWidget->setString(*a + *b + "\n" + *c + *d);
+		string temp = (now->tm_sec < 10) ? "0" : "";
+		ClockSecond->setString("."+temp + *e);
+		delete s1, s2, s3, a, b, c, d, e;
+	}
+
 	// Constructor
 	ROA12()
 	{
@@ -802,12 +846,12 @@ public:
 		Recents = new Recent(2, Home->Background.getSize());
 		Recents->Background.setPosition(Notifications->Background.getPosition());
 		Recents->Background.setFillColor(DefaultSetting->getBackgroundColor());
-		
+
 		// Setting App_01
 		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.8f);
 		App_01->AppName.setFont(DefaultSetting->getSystemFonts());
-//		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
-		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - 2.5f* (App_01->Icon.getRadius() + App_01->AppName.getGlobalBounds().height) );
+		//		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
+		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - 2.5f * (App_01->Icon.getRadius() + App_01->AppName.getGlobalBounds().height));
 		App_01->AppName.setOrigin(App_01->AppName.getGlobalBounds().width / 2.f, App_01->AppName.getGlobalBounds().height / 2.f);
 		App_01->AppName.setPosition(App_01->Icon.getPosition().x + (App_01->Icon.getRadius() / 2.f) * 2.f, App_01->Icon.getPosition().y + App_01->Icon.getRadius() * 215.f / 100.f);
 
@@ -830,7 +874,7 @@ public:
 
 		GoogleSearch = new sf::RectangleShape;
 		GoogleSearch->setSize(sf::Vector2f(Home->Background.getSize().x - Home->Background.getSize().x * 0.2f, Home->Background.getSize().y * 0.063f));
-		GoogleSearch->setPosition(GoogleGBackground->getPosition().x + GoogleG->getRadius() , GoogleGBackground->getPosition().y+1.f);
+		GoogleSearch->setPosition(GoogleGBackground->getPosition().x + GoogleG->getRadius(), GoogleGBackground->getPosition().y + 1.f);
 		GoogleSearch->setFillColor(DefaultSetting->BackgroundTileColor);
 		//GoogleSearch->setFillColor(sf::Color(0,0,255,120));
 
@@ -843,27 +887,60 @@ public:
 		GoogleMic->setRadius(Home->Background.getSize().y * 0.047 * 0.6f);
 		GoogleMic->setTexture(GoogleMicTexture);
 		//GoogleMic->setFillColor(sf::Color::Green);
-		GoogleMic->setPosition(GoogleG->getPosition().x+ GoogleMic->getRadius()* 13.1f, GoogleG->getPosition().y);
+		GoogleMic->setPosition(GoogleG->getPosition().x + GoogleMic->getRadius() * 13.1f, GoogleG->getPosition().y);
 
 		GoogleMicBackground = new sf::CircleShape;
 		GoogleMicBackground->setRadius(Home->Background.getSize().y * 0.047 * 0.7f);
 		GoogleMicBackground->setPosition(GoogleG->getPosition().x + 13.f * GoogleMic->getRadius(), GoogleG->getPosition().y - GoogleMic->getRadius() * 0.2);
 		GoogleMicBackground->setFillColor(DefaultSetting->BackgroundTileColor);
-	
+
 		// Time Widget Setting
 		TimeWidget = new sf::Text;
 		TimeWidget->setString("1 2\n00");
-		TimeWidget->setFont(DefaultSetting->font);
-		TimeWidget->setFillColor(sf::Color::Red);
-		TimeWidget->setCharacterSize(75);
-		TimeWidget->setPosition(Home->Background.getPosition());
+		TimeWidget->setFont(DefaultSetting->BoldFont);
+		//TimeWidget->setFillColor(sf::Color::Red);
+		TimeWidget->setFillColor(DefaultSetting->ThemeColor);
+		TimeWidget->setCharacterSize(90);
+		TimeWidget->setPosition(Home->Background.getPosition().x + TimeWidget->getGlobalBounds().width - TimeWidget->getGlobalBounds().width * 0.10f, Home->Background.getPosition().y);
+		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
+		TimeWidget->setOutlineColor(sf::Color::White);
+		TimeWidget->setOutlineThickness(1);
+		/*TimeTexture = new sf::Texture;
+		if (!TimeTexture->loadFromFile("Data/Icons/Rectangle 1.png"))
+		{
+			cout << "Unable to load the background of the clock widget" << endl;
+		}
+		TimeRect = new sf::RectangleShape;
+		TimeRect->setSize(sf::Vector2f(Home->Background.getSize().x * 0.45, Home->Background.getSize().y * 0.25));
+		TimeRect->setPosition(Home->Background.getPosition());
+		TimeRect->setFillColor(sf::Color::Red);*/
+		DateDayYear = new sf::Text;
+		DateDayYear->setString("21 Mon 2201");
+		DateDayYear->setFont(DefaultSetting->BoldFont);
+		//TimeWidget->setFillColor(sf::Color::Red);
+		DateDayYear->setFillColor(sf::Color::Black);
+		DateDayYear->setCharacterSize(15);
+		DateDayYear->setPosition(TimeWidget->getPosition().x + DateDayYear->getGlobalBounds().width * 0.2f, TimeWidget->getPosition().y + TimeWidget->getGlobalBounds().height * 1.2f);
+		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
+		DateDayYear->setOutlineColor(sf::Color::White);
+		DateDayYear->setOutlineThickness(1);
 
+		ClockSecond = new sf::Text;
+		ClockSecond->setString(".20");
+		ClockSecond->setFont(DefaultSetting->BoldFont);
+		//TimeWidget->setFillColor(sf::Color::Red);
+		ClockSecond->setFillColor(sf::Color::Black);
+		ClockSecond->setCharacterSize(35);
+		ClockSecond->setPosition(TimeWidget->getPosition().x + ClockSecond->getGlobalBounds().width * 2.5f, TimeWidget->getPosition().y + TimeWidget->getGlobalBounds().height * 0.94f);
+		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
+		ClockSecond->setOutlineColor(sf::Color::White);
+		ClockSecond->setOutlineThickness(1);
 	}
 
 	// Destructor
 	~ROA12()
 	{
-		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget;
+		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget, DateDayYear, ClockSecond;
 	}
 };
 
