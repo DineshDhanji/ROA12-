@@ -512,6 +512,13 @@ protected:
 	sf::CircleShape* GoogleMic;
 	sf::CircleShape* GoogleMicBackground;
 
+	// Status Bar
+	sf::RectangleShape* StatusBar;
+	sf::Text* StatusBarTime;
+	sf::RectangleShape* StatusBarBattery;
+	sf::Texture* BatteryTexture;
+	sf::RectangleShape* StatusBarSignals;
+	sf::Texture* SignalsTexture;
 	// Time Clock
 	sf::Text* TimeWidget;
 	sf::Text* DateDayYear;
@@ -596,7 +603,7 @@ public:
 
 			// Setting Positions
 			NavigationBar->Appear(Home->Background.getPosition().x, Home->Background.getSize().y + Home->Background.getPosition().y);
-
+			UpdateStatusBar();
 			// if (NavigationBar->HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			// {
 			// 	Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
@@ -617,6 +624,7 @@ public:
 
 			window->clear(sf::Color::White);
 			window->draw(Home->Background);
+
 			window->draw(*GoogleSearch);
 			window->draw(*GoogleGBackground);
 			window->draw(*GoogleMicBackground);
@@ -635,12 +643,13 @@ public:
 			window->draw(NavigationBar->HomeIcon);
 			window->draw(NavigationBar->HomeIconSmall);
 			window->draw(NavigationBar->RecentIcon);
-			//	window->draw(*GoogleGBackground);
-
-
-
 			Recents->DrawMe(window);
-			//window->draw(Recents->Background);
+			window->draw(*StatusBar);
+			window->draw(*StatusBarTime);
+			window->draw(*StatusBarBattery);
+			window->draw(*StatusBarSignals);
+
+			;			//window->draw(Recents->Background);
 
 			window->display();
 		}
@@ -829,6 +838,30 @@ public:
 
 		delete s1, s2, s3, s4, s5, s6, a, b, c, d, e, g, h, f;
 	}
+	void UpdateStatusBar()
+	{
+		if ((WhoIsActiveNow == 1 || WhoIsActiveNow == 2) && DefaultSetting->DarkTheme == 0)
+		{
+			StatusBarTime->setFillColor(sf::Color::Black);
+			StatusBar->setFillColor(sf::Color(255, 255, 255, 0));
+			StatusBarBattery->setFillColor(sf::Color::Black);
+			StatusBarSignals->setFillColor(sf::Color::Black);
+		}
+		else if ((WhoIsActiveNow == 1 || WhoIsActiveNow == 2) && DefaultSetting->DarkTheme == 1)
+		{
+			StatusBarTime->setFillColor(sf::Color::White);
+			StatusBar->setFillColor(sf::Color(255, 255, 255, 0));
+			StatusBarBattery->setFillColor(sf::Color::White);
+			StatusBarSignals->setFillColor(sf::Color::White);
+		}
+		else if (WhoIsActiveNow == 0)
+		{
+			StatusBar->setFillColor(sf::Color(255, 255, 255, 0));
+			StatusBarTime->setFillColor(sf::Color::White);
+			StatusBarBattery->setFillColor(sf::Color::White);
+			StatusBarSignals->setFillColor(sf::Color::White);
+		}
+	}
 
 	// Constructor
 	ROA12()
@@ -858,7 +891,7 @@ public:
 
 		// Setting Notification
 		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y);
-		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - (Home->Background.getSize().y));
+		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - 2 * (Home->Background.getSize().y));
 		//Notifications->Background.setPosition(Home->Background.getPosition());
 		Notifications->Background.setFillColor(DefaultSetting->getBackgroundColor());
 		Notifications->setPreviousPosition(Notifications->Background.getPosition());
@@ -922,7 +955,7 @@ public:
 		//TimeWidget->setFillColor(sf::Color::Red);
 		TimeWidget->setFillColor(DefaultSetting->ThemeColor);
 		TimeWidget->setCharacterSize(90);
-		TimeWidget->setPosition(Home->Background.getPosition().x + TimeWidget->getGlobalBounds().width - TimeWidget->getGlobalBounds().width * 0.10f, Home->Background.getPosition().y);
+		TimeWidget->setPosition(Home->Background.getPosition().x + TimeWidget->getGlobalBounds().width - TimeWidget->getGlobalBounds().width * 0.10f, Home->Background.getPosition().y + Home->Background.getPosition().y * 0.5f);
 		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
 		TimeWidget->setOutlineColor(sf::Color::White);
 		TimeWidget->setOutlineThickness(1);
@@ -956,12 +989,45 @@ public:
 		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
 		ClockSecond->setOutlineColor(sf::Color::White);
 		ClockSecond->setOutlineThickness(1);
+
+		StatusBar = new sf::RectangleShape;
+		StatusBar->setPosition(Home->Background.getPosition());
+		StatusBar->setFillColor(sf::Color(255, 0, 0, 120));
+		StatusBar->setSize(sf::Vector2f(Home->Background.getSize().x, Home->Background.getSize().y * 0.03f));
+
+		StatusBarTime = new sf::Text;
+		StatusBarTime->setString("12:00");
+		StatusBarTime->setFont(DefaultSetting->BoldFont);
+		StatusBarTime->setFillColor(sf::Color::White);
+		StatusBarTime->setCharacterSize(15);
+		StatusBarTime->setPosition(StatusBar->getPosition().x + StatusBar->getPosition().x * 0.03f, StatusBar->getPosition().y);
+
+		BatteryTexture = new sf::Texture;
+		if (!BatteryTexture->loadFromFile("Data/Icons/Battery.png"))
+		{
+			cout << "Unable ot load battery icon for status bar." << endl;
+		}
+		StatusBarBattery = new sf::RectangleShape;
+		StatusBarBattery->setSize(sf::Vector2f(StatusBar->getSize().x * 0.06f, StatusBar->getSize().y * 1.0f));
+		StatusBarBattery->setTexture(BatteryTexture);
+		//		StatusBarBattery->setFillColor(sf::Color::Red);
+		StatusBarBattery->setPosition(StatusBarTime->getPosition().x + StatusBarTime->getPosition().x * 1.14f, StatusBarTime->getPosition().y);
+
+		SignalsTexture = new sf::Texture;
+		if (!SignalsTexture->loadFromFile("Data/Icons/Signals.png"))
+		{
+			cout << "Unable ot load signal icon for status bar." << endl;
+		}
+		StatusBarSignals = new sf::RectangleShape;
+		StatusBarSignals->setSize(sf::Vector2f(StatusBar->getSize().x * 0.06f, StatusBar->getSize().y * 1.0f));
+		StatusBarSignals->setTexture(SignalsTexture);
+		StatusBarSignals->setPosition(StatusBarTime->getPosition().x + StatusBarTime->getPosition().x * 1.06f, StatusBarTime->getPosition().y);
 	}
 
 	// Destructor
 	~ROA12()
 	{
-		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget, DateDayYear, ClockSecond;
+		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget, DateDayYear, ClockSecond, StatusBar, StatusBarTime, StatusBarBattery, BatteryTexture, StatusBarSignals, SignalsTexture;
 	}
 };
 
