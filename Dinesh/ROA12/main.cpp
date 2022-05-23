@@ -788,25 +788,46 @@ public:
 		stringstream* s1 = new stringstream;
 		stringstream* s2 = new stringstream;
 		stringstream* s3 = new stringstream;
+		stringstream* s4 = new stringstream;
+		stringstream* s5 = new stringstream;
+		stringstream* s6 = new stringstream;
 
 		string* a = new string;
 		string* b = new string;
 		string* c = new string;
 		string* d = new string;
 		string* e = new string;
+		string* f = new string;
+		string* g = new string;
+		string* h = new string;
+
 		*a += (now->tm_hour < 10) ? "0" : "";
 		*s1 << now->tm_hour;
 		*s1 >> *b;
 		*c += (now->tm_min < 10) ? "0" : "";
 		*s2 << now->tm_min;
 		*s2 >> *d;
+		TimeWidget->setString(*a + *b + "\n" + *c + *d);
+
 		*e += (now->tm_sec < 10) ? "0" : "";
 		*s3 << now->tm_sec;
 		*s3 >> *e;
-		TimeWidget->setString(*a + *b + "\n" + *c + *d);
 		string temp = (now->tm_sec < 10) ? "0" : "";
-		ClockSecond->setString("."+temp + *e);
-		delete s1, s2, s3, a, b, c, d, e;
+		ClockSecond->setString("." + temp + *e);
+
+		*g += "";
+		*s4 << now->tm_mday;
+		*s4 >> *g;
+		*h += "";
+		*s5 << now->tm_mon;
+		*s5 >> *h;
+		*f += "";
+		*s6 << 1900 + now->tm_year;
+		*s6 >> *f;
+
+		DateDayYear->setString((*g) + "-" + (*h) + "-" + (*f));
+
+		delete s1, s2, s3, s4, s5, s6, a, b, c, d, e, g, h, f;
 	}
 
 	// Constructor
