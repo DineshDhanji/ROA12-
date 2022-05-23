@@ -287,7 +287,7 @@ public:
 			{
 				Box[i].setSize(sf::Vector2f(Background.getSize().x * 0.45, Background.getSize().y * 0.25));
 				//	Box[i].setFillColor(sf::Color::Red);
-				Box[i].setPosition(Background.getPosition().x + Background.getSize().x * 0.03, Background.getPosition().y + Background.getSize().y * 0.01);
+				Box[i].setPosition(Background.getPosition().x + Background.getSize().x * 0.03, Background.getPosition().y + Background.getSize().y * 0.04);
 			}
 			else
 			{
