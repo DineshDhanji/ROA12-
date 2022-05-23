@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <ctime>
 #include <iterator>
 
 using namespace std;
@@ -7,19 +8,19 @@ using namespace std;
 // GLOBAL SCOPE
 int WhoIsActiveNow = 0;
 int RecentCount = 1;
-int *RecentArray = new int[RecentCount];
+int* RecentArray = new int[RecentCount];
 
 void changeRecent(int ID)
 {
-	bool *found = new bool;
+	bool* found = new bool;
 	*found = 0;
 	for (int i = 0; i < RecentCount; i++)
 	{
 		if (ID == RecentArray[i])
 		{
 			*found = 1;
-			int *j = new int(i);
-			int *temp = new int(0);
+			int* j = new int(i);
+			int* temp = new int(0);
 
 			while (*j != RecentCount - 1)
 			{
@@ -39,7 +40,7 @@ void changeRecent(int ID)
 	}
 	if (*found != 1)
 	{
-		int *temp = new int[RecentCount];
+		int* temp = new int[RecentCount];
 		for (int i = 0; i < RecentCount; i++)
 		{
 			temp[i] = RecentArray[i];
@@ -73,7 +74,9 @@ public:
 	bool DarkTheme;
 	sf::Color FontColor;
 	sf::Color BackgroundColor;
+	sf::Color BackgroundTileColor;
 	sf::Font font;
+	time_t *MyTime;
 
 public:
 	// CONSTRUCTOR(S)
@@ -88,6 +91,8 @@ public:
 		{
 			cout << "Unable to load the fonts from file.";
 		}
+		BackgroundTileColor = sf::Color::White;
+		MyTime = new time_t;
 	}
 	// DESTRUCTOR(S)
 	~DefaultSystem() {}
@@ -227,20 +232,22 @@ public:
 	void Appear(sf::Vector2f Position, DefaultSystem* Temp)
 	{
 		//Background.setFillColor(Temp->getBackgroundColor());
-		Background.setFillColor(sf::Color(180, 140, 245, 120));
+		Background.setFillColor(Temp->BackgroundColor);
 		changeRecent(getID());
 		Background.setPosition(Position);
 	}
 
 
-	void Disappear(){
-		Background.setPosition(Background.getPosition().x, Background.getPosition().y + Background.getSize().y);
+	void Disappear() {
+		Background.setPosition(Background.getPosition().x, Background.getPosition().y + Background.getSize().y * 1.20f);
 
 
 	}
 
-	void DrawMe(sf::RenderWindow* window){
-		int *tempCount = new int(0);
+	void DrawMe(sf::RenderWindow* window)
+	{
+		window->draw(Background);
+		int* tempCount = new int(0);
 		for (int i = 0; i < RecentCount; i++)
 		{
 			if (RecentArray[i] != 0 && RecentArray[i] != 1 && RecentArray[i] != 2)
@@ -248,28 +255,64 @@ public:
 				(*tempCount)++;
 			}
 		}
-		
+		int* tempArray = new int[*tempCount];
+		int* count = new int(0);
+		int* j = new int(0);
+		while (*count != *tempCount)
+		{
+			if (RecentArray[*j] != 0 && RecentArray[*j] != 1 && RecentArray[*j] != 2)
+			{
+				tempArray[*count] = RecentArray[*j];
+				(*count)++;
+			}
+			(*j)++;
+		}
+
+
 		sf::RectangleShape* Box = new sf::RectangleShape[*tempCount];
+		sf::Texture* tempTex = new sf::Texture;
+		//sf::RectangleShape* Box = new sf::RectangleShape[2];
+		//for (int i = 0; i < 2; i++)
 		for (int i = 0; i < *tempCount; i++)
 		{
-			Box[i].setSize(sf::Vector2f(Background.getSize().x, Background.getSize().y*0.047));
-			Box[i].setFillColor(sf::Color::Red);
-			Box[i].setPosition(Background.getPosition());
+			if (i % 2 == 0)
+			{
+				Box[i].setSize(sf::Vector2f(Background.getSize().x * 0.45, Background.getSize().y * 0.25));
+				//	Box[i].setFillColor(sf::Color::Red);
+				Box[i].setPosition(Background.getPosition().x + Background.getSize().x * 0.03, Background.getPosition().y + Background.getSize().y * 0.01);
+			}
+			else
+			{
+				Box[i].setSize(sf::Vector2f(Background.getSize().x * 0.45, Background.getSize().y * 0.25));
+				Box[i].setFillColor(sf::Color::Blue);
+				Box[i].setPosition(Box[0].getPosition().x + Box[0].getPosition().x * 0.6f, Box[0].getPosition().y);
+			}
+			switch (tempArray[i])
+			{
+			case 3:
+				if (!tempTex->loadFromFile("Data/Icons/NotesIcon.jpg"))
+				{
+					cout << "Unable to open the cover ofr the notes." << endl;
+				}
+				Box[i].setTexture(tempTex);
+
+			default:
+				break;
+			}
 			window->draw(Box[i]);
 		}
 
-		window->draw(Background);
-
+		delete tempCount, tempArray, count, j, tempTex;
 	}
 
 	// Constructor
 	Recent(int ID, sf::Vector2f Size) :Tile(ID, 0) // 0 indicates that currently recent is active
 	{
-		Background.setSize(sf::Vector2f(Size.x, Size.y - Size.y* 0.047));
+		Background.setSize(sf::Vector2f(Size.x, Size.y - Size.y * 0.047));
 	}
 
 	// Destructor
-	~Recent(){}
+	~Recent() {}
 };
 
 class Navigation
@@ -333,7 +376,7 @@ class App
 public:
 	sf::CircleShape Icon;
 	sf::Texture textureIcon;
-	Tile *AppBackground;
+	Tile* AppBackground;
 	sf::Text AppName;
 
 
@@ -389,12 +432,12 @@ public:
 	}
 	void AppearanceAnimation(sf::RenderWindow* window)
 	{
-		sf::RectangleShape *Cover = new sf::RectangleShape;
-		sf::RectangleShape *CoverPicture = new sf::RectangleShape;
+		sf::RectangleShape* Cover = new sf::RectangleShape;
+		sf::RectangleShape* CoverPicture = new sf::RectangleShape;
 
-		Cover->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y *0.047));
-		CoverPicture->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y *0.047));
-		sf::Texture *texture = new sf::Texture;
+		Cover->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y * 0.047));
+		CoverPicture->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y * 0.047));
+		sf::Texture* texture = new sf::Texture;
 		if (!texture->loadFromFile("Data/Icons/NotesIcon.jpg"))
 		{
 			cout << "Unable to open the cover ofr the notes." << endl;
@@ -407,9 +450,9 @@ public:
 
 
 
-		sf::Time *timer = new sf::Time;
+		sf::Time* timer = new sf::Time;
 		*timer = sf::milliseconds(1000);
-		sf::Clock *clock = new sf::Clock;
+		sf::Clock* clock = new sf::Clock;
 		while (clock->getElapsedTime().asMilliseconds() < timer->asMilliseconds())
 		{
 			window->draw(*Cover);
@@ -442,15 +485,27 @@ class ROA12
 {
 protected:
 	DefaultSystem* DefaultSetting;
-	Tile *Home;
+	Tile* Home;
 	sf::Texture backgroundImage;
 	Notification* Notifications;
 	Navigation* NavigationBar;
 	Recent* Recents;
 
-	TempApp *App_01;
+	TempApp* App_01;
 
 	sf::RenderWindow* window;
+
+	// Google Bar
+	sf::Texture *GoogleGTexture;
+	sf::CircleShape* GoogleG;
+	sf::CircleShape *GoogleGBackground;
+	sf::RectangleShape* GoogleSearch;
+	sf::Texture* GoogleMicTexture;
+	sf::CircleShape* GoogleMic;
+	sf::CircleShape* GoogleMicBackground;
+
+	// Time Clock
+	sf::Text* TimeWidget;
 
 public:
 	void initiate()
@@ -540,13 +595,21 @@ public:
 
 			// Setting Positions 
 
-			for (int i = 0; i < RecentCount; i++)
+		/*	for (int i = 0; i < RecentCount; i++)
 			{
 				cout << RecentArray[i] << ", ";
-			}
-			cout << endl;
+			}*/
+			/*cout << GoogleG->getPosition().x << " " << GoogleG->getPosition().y;
+			*/
+			cout << "" << TimeWidget->getPosition().x << " " << TimeWidget->getPosition().y << endl;
 			window->clear(sf::Color::White);
 			window->draw(Home->Background);
+			window->draw(*GoogleSearch);
+			window->draw(*GoogleGBackground);
+			window->draw(*GoogleMicBackground);
+			window->draw(*GoogleG);
+			window->draw(*GoogleMic);
+			window->draw(*TimeWidget);
 			window->draw(App_01->Icon);
 			window->draw(App_01->AppName);
 			window->draw(Notifications->Background);
@@ -555,6 +618,10 @@ public:
 			window->draw(NavigationBar->HomeIcon);
 			window->draw(NavigationBar->HomeIconSmall);
 			window->draw(NavigationBar->RecentIcon);
+		//	window->draw(*GoogleGBackground);
+	
+
+
 			Recents->DrawMe(window);
 			//window->draw(Recents->Background);
 
@@ -568,14 +635,14 @@ public:
 
 	void BackButton()
 	{
-		int *tempId = new int;
+		int* tempId = new int;
 		*tempId = WhoIsActiveNow;
 		if (*tempId == 1)
 		{
 			Deactivate(Notifications->getID());
 			Notifications->Disappear();
 
-			int *temp = new int[RecentCount - 1];
+			int* temp = new int[RecentCount - 1];
 			for (int i = 0; i < RecentCount; i++)
 			{
 				if (RecentArray[i] != 1)
@@ -598,7 +665,7 @@ public:
 		{
 			Deactivate(Recents->getID());
 			Recents->Disappear();
-			int *temp = new int[RecentCount - 1];
+			int* temp = new int[RecentCount - 1];
 			for (int i = 0; i < RecentCount; i++)
 			{
 				if (RecentArray[i] != 2)
@@ -627,7 +694,7 @@ public:
 		}
 		delete tempId;
 	}
-	void RecentButton(){}
+	void RecentButton() {}
 	void Deactivate(int ID)
 	{
 		switch (ID)
@@ -661,7 +728,7 @@ public:
 	}
 	void Activate(int ID)
 	{
-		int *temp = new int(0);
+		int* temp = new int(0);
 		switch (ID)
 		{
 		case 0:
@@ -697,6 +764,7 @@ public:
 		changeRecent(ID);
 		delete temp;
 	}
+	
 	// Constructor
 	ROA12()
 	{
@@ -726,6 +794,7 @@ public:
 		// Setting Notification
 		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y);
 		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - (Home->Background.getSize().y));
+		//Notifications->Background.setPosition(Home->Background.getPosition());
 		Notifications->Background.setFillColor(DefaultSetting->getBackgroundColor());
 		Notifications->setPreviousPosition(Notifications->Background.getPosition());
 
@@ -733,21 +802,68 @@ public:
 		Recents = new Recent(2, Home->Background.getSize());
 		Recents->Background.setPosition(Notifications->Background.getPosition());
 		Recents->Background.setFillColor(DefaultSetting->getBackgroundColor());
-
+		
 		// Setting App_01
-		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.9f);
+		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.8f);
 		App_01->AppName.setFont(DefaultSetting->getSystemFonts());
-		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
+//		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
+		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - 2.5f* (App_01->Icon.getRadius() + App_01->AppName.getGlobalBounds().height) );
 		App_01->AppName.setOrigin(App_01->AppName.getGlobalBounds().width / 2.f, App_01->AppName.getGlobalBounds().height / 2.f);
 		App_01->AppName.setPosition(App_01->Icon.getPosition().x + (App_01->Icon.getRadius() / 2.f) * 2.f, App_01->Icon.getPosition().y + App_01->Icon.getRadius() * 215.f / 100.f);
 
+		// Google's Search Bar Setting
+		GoogleGTexture = new sf::Texture;
+		if (!GoogleGTexture->loadFromFile("Data/Icons/Google.png"))
+		{
+			cout << "Unable to load the Goolge G Icon" << endl;
+		}
+		GoogleG = new sf::CircleShape;
+		GoogleG->setRadius(Home->Background.getSize().y * 0.047 * 0.6f);
+		GoogleG->setTexture(GoogleGTexture);
+		//GoogleG->setFillColor(sf::Color::Red);
+		GoogleG->setPosition(Home->Background.getPosition().x + GoogleG->getRadius() / 1.6f, Home->Background.getSize().y - GoogleG->getRadius() * 0.8f);
+		//GoogleGBackground->setPosition(GoogleG->getPosition());
+		GoogleGBackground = new sf::CircleShape;
+		GoogleGBackground->setRadius(Home->Background.getSize().y * 0.047 * 0.7f);
+		GoogleGBackground->setPosition(Home->Background.getPosition().x + GoogleG->getRadius() / 2.f, Home->Background.getSize().y - GoogleG->getRadius());
+		GoogleGBackground->setFillColor(DefaultSetting->BackgroundTileColor);
+
+		GoogleSearch = new sf::RectangleShape;
+		GoogleSearch->setSize(sf::Vector2f(Home->Background.getSize().x - Home->Background.getSize().x * 0.2f, Home->Background.getSize().y * 0.063f));
+		GoogleSearch->setPosition(GoogleGBackground->getPosition().x + GoogleG->getRadius() , GoogleGBackground->getPosition().y+1.f);
+		GoogleSearch->setFillColor(DefaultSetting->BackgroundTileColor);
+		//GoogleSearch->setFillColor(sf::Color(0,0,255,120));
+
+		GoogleMicTexture = new sf::Texture;
+		if (!GoogleMicTexture->loadFromFile("Data/Icons/GoogleMIc.png"))
+		{
+			cout << "Unable to load the Goolge Mic Icon" << endl;
+		}
+		GoogleMic = new sf::CircleShape;
+		GoogleMic->setRadius(Home->Background.getSize().y * 0.047 * 0.6f);
+		GoogleMic->setTexture(GoogleMicTexture);
+		//GoogleMic->setFillColor(sf::Color::Green);
+		GoogleMic->setPosition(GoogleG->getPosition().x+ GoogleMic->getRadius()* 13.1f, GoogleG->getPosition().y);
+
+		GoogleMicBackground = new sf::CircleShape;
+		GoogleMicBackground->setRadius(Home->Background.getSize().y * 0.047 * 0.7f);
+		GoogleMicBackground->setPosition(GoogleG->getPosition().x + 13.f * GoogleMic->getRadius(), GoogleG->getPosition().y - GoogleMic->getRadius() * 0.2);
+		GoogleMicBackground->setFillColor(DefaultSetting->BackgroundTileColor);
+	
+		// Time Widget Setting
+		TimeWidget = new sf::Text;
+		TimeWidget->setString("1 2\n00");
+		TimeWidget->setFont(DefaultSetting->font);
+		TimeWidget->setFillColor(sf::Color::Red);
+		TimeWidget->setCharacterSize(75);
+		TimeWidget->setPosition(Home->Background.getPosition());
 
 	}
 
 	// Destructor
 	~ROA12()
 	{
-		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01;
+		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget;
 	}
 };
 
