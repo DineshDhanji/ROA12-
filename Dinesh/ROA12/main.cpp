@@ -1039,5 +1039,5 @@ int main()
 	ROA12 phone;
 	phone.initiate();
 
-	return 0;
+	return 1;
 }
