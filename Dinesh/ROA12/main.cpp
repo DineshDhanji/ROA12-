@@ -31,11 +31,6 @@ void changeRecent(int ID)
 				(*j)++;
 			}
 			delete j, temp;
-			// int *temp = new int;
-			// *temp = RecentArray[i];
-			// RecentArray[i] = RecentArray[RecentCount - 1];
-			// RecentArray[RecentCount - 1] = *temp;
-			// delete temp;
 			break;
 		}
 	}
@@ -75,6 +70,7 @@ public:
 	bool DarkTheme;
 	sf::Color FontColor;
 	sf::Color ThemeColor;
+	sf::Color TileColor;
 	sf::Color BackgroundColor;
 	sf::Color BackgroundTileColor;
 	sf::Font font;
@@ -87,9 +83,8 @@ public:
 	{
 		FontColor = sf::Color::Black;
 		ThemeColor = sf::Color(233, 29, 64);
-		//BackgroundColor = sf::Color::White;
+		TileColor = sf::Color(245, 124, 105);
 		BackgroundColor = sf::Color(255, 255, 255, 200);
-		// BackgroundColor = sf::Color(48, 49, 44, 120);
 		DarkTheme = 0;
 		if (!font.loadFromFile("Data/Fonts/ProductSans-Regular.ttf"))
 		{
@@ -114,6 +109,10 @@ public:
 	{
 		this->BackgroundColor = BackgroundColor;
 	}
+	void setBackgroundTileColor(sf::Color BackgroundTileColor)
+	{
+		this->BackgroundTileColor = BackgroundTileColor;
+	}
 	void setDarkTheme(bool DarkTheme)
 	{
 		this->DarkTheme = DarkTheme;
@@ -135,6 +134,22 @@ public:
 	sf::Font& getSystemFonts()
 	{
 		return font;
+	}
+	sf::Font& getSystemBoldFont()
+	{
+		return BoldFont;
+	}
+	sf::Color getBackgroundTileColor(void)
+	{
+		return BackgroundTileColor;
+	}
+	sf::Color getThemeColor()
+	{
+		return ThemeColor;
+	}
+	sf::Color getTileColor()
+	{
+		return TileColor;
 	}
 };
 
@@ -177,24 +192,254 @@ public:
 	{
 		return IsActive;
 	}
+	sf::RectangleShape getBackground()
+	{
+		return Background;
+	}
 };
 
 class Notification : public Tile
 {
 protected:
 	sf::Vector2f PreviousPosition;
+	sf::RectangleShape* TileOne;
+
+	sf::RectangleShape* TileOneWIFI;
+	sf::Texture* WiFiTexture;
+	sf::RectangleShape* WifiIcon;
+	sf::Text* WifiText01;
+	sf::Text* WifiText02;
+
+	sf::RectangleShape* TileOneBluetooth;
+	sf::Texture* BluetoothTexture;
+	sf::RectangleShape* BluetoothIcon;
+	sf::Text* BluetoothText01;
+	sf::Text* BluetoothText02;
+
+	sf::RectangleShape* TileOneInternet;
+	sf::Texture* InternetTexture;
+	sf::RectangleShape* InternetIcon;
+	sf::Text* InternetText01;
+	sf::Text* InternetText02;
+
+	sf::RectangleShape* TileOneDark;
+	sf::Texture* DarkTexture;
+	sf::RectangleShape* DarkIcon;
+	sf::Text* DarkText01;
+	sf::Text* DarkText02;
+
 public:
 	// Function(s)
 	void Appear(float x, float y)
 	{
 		changeRecent(getID());
+
 		Background.setPosition(x, y);
+		TileOne->setPosition(x, y);
+
+		TileOneWIFI->setPosition(TileOne->getPosition().x + TileOneWIFI->getSize().x * 0.1f, TileOne->getPosition().y + TileOneWIFI->getSize().x * 0.35f);
+		WifiIcon->setPosition(TileOneWIFI->getPosition().x + WifiIcon->getSize().x * 0.2f, TileOneWIFI->getPosition().y + TileOneWIFI->getPosition().y * 0.05f);
+		WifiText01->setPosition(WifiIcon->getPosition().x + WifiIcon->getPosition().x * 0.17f, WifiIcon->getPosition().y + WifiIcon->getGlobalBounds().height * 0.1f);
+		WifiText02->setPosition(WifiIcon->getPosition().x + WifiIcon->getPosition().x * 0.17f, WifiIcon->getPosition().y + WifiIcon->getGlobalBounds().height * 0.6f);
+
+		TileOneBluetooth->setPosition(TileOne->getPosition().x + TileOneBluetooth->getSize().x * 1.2f, TileOne->getPosition().y + TileOneBluetooth->getSize().x * 0.35f);
+		BluetoothIcon->setPosition(TileOneBluetooth->getPosition().x + TileOneBluetooth->getSize().x * 0.1f, TileOneBluetooth->getPosition().y + TileOneBluetooth->getPosition().y * 0.1f);
+		BluetoothText01->setPosition(BluetoothIcon->getPosition().x + BluetoothIcon->getPosition().x * 0.08f, BluetoothIcon->getPosition().y + BluetoothIcon->getGlobalBounds().height * 0.01f);
+		BluetoothText02->setPosition(BluetoothIcon->getPosition().x + BluetoothIcon->getPosition().x * 0.08f, BluetoothIcon->getPosition().y + BluetoothIcon->getGlobalBounds().height * 0.6f);
+
+		TileOneInternet->setPosition(TileOne->getPosition().x + TileOneWIFI->getSize().x * 0.1f, 2.2f * TileOne->getPosition().y + TileOneWIFI->getSize().x * 0.35f);
+		InternetIcon->setPosition(TileOneInternet->getPosition().x + TileOneInternet->getSize().x * 0.04f, TileOneInternet->getPosition().y + TileOneBluetooth->getPosition().y * 0.1f);
+		InternetText01->setPosition(InternetIcon->getPosition().x + InternetIcon->getPosition().x * 0.15f, InternetIcon->getPosition().y + InternetIcon->getGlobalBounds().height * 0.01f);
+		InternetText02->setPosition(InternetIcon->getPosition().x + InternetIcon->getPosition().x * 0.15f, InternetIcon->getPosition().y + InternetIcon->getGlobalBounds().height * 0.6f);
+
+		TileOneDark->setPosition(TileOne->getPosition().x + TileOneDark->getSize().x * 1.2f, 2.2f * TileOne->getPosition().y + TileOneDark->getSize().x * 0.35f);
+		DarkIcon->setPosition(TileOneDark->getPosition().x + TileOneDark->getSize().x * 0.08f, TileOneDark->getPosition().y + TileOneDark->getPosition().y * 0.07f);
+		DarkText01->setPosition(DarkIcon->getPosition().x + DarkIcon->getPosition().x * 0.08f, DarkIcon->getPosition().y + DarkIcon->getGlobalBounds().height * 0.01f);
+		DarkText02->setPosition(DarkIcon->getPosition().x + DarkIcon->getPosition().x * 0.08f, DarkIcon->getPosition().y + DarkIcon->getGlobalBounds().height * 0.6f);
+
 	}
 	void Disappear()
 	{
 		Background.setPosition(getPreviousPositionX(), getPreviousPositionY());
+		TileOne->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		TileOneWIFI->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		WifiIcon->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		WifiText01->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		WifiText02->setPosition(getPreviousPositionX(), getPreviousPositionY());
 
-		//WhoIsActiveNow = 0;
+		TileOneBluetooth->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		BluetoothIcon->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		BluetoothText01->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		BluetoothText02->setPosition(getPreviousPositionX(), getPreviousPositionY());
+
+		TileOneInternet->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		InternetIcon->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		InternetText01->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		InternetText02->setPosition(getPreviousPositionX(), getPreviousPositionY());
+
+		TileOneDark->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		DarkIcon->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		DarkText01->setPosition(getPreviousPositionX(), getPreviousPositionY());
+		DarkText02->setPosition(getPreviousPositionX(), getPreviousPositionY());
+	}
+	void DrawMe(sf::RenderWindow* window, DefaultSystem* DefaultSetting)
+	{
+		Background.setFillColor(DefaultSetting->getBackgroundColor());
+		TileOne->setFillColor(DefaultSetting->getBackgroundTileColor());
+		window->draw(getBackground());
+		window->draw(*TileOne);
+
+		window->draw(*TileOneWIFI);
+		window->draw(*WifiIcon);
+		window->draw(*WifiText01);
+		window->draw(*WifiText02);
+
+		window->draw(*TileOneBluetooth);
+		window->draw(*BluetoothIcon);
+		window->draw(*BluetoothText01);
+		window->draw(*BluetoothText02);
+
+		window->draw(*TileOneInternet);
+		window->draw(*InternetIcon);
+		window->draw(*InternetText01);
+		window->draw(*InternetText02);
+
+		window->draw(*TileOneDark);
+		window->draw(*DarkIcon);
+		window->draw(*DarkText01);
+		window->draw(*DarkText02);
+	}
+
+	// Constructor
+	Notification(int ID, sf::Vector2f Size, sf::Vector2f Position, DefaultSystem* DefaultSetting) :Tile(ID, false)
+	{
+		Background.setSize(Size);
+
+		TileOne = new sf::RectangleShape;
+		TileOne->setSize(sf::Vector2f(Size.x, Size.y * 0.35f));
+		TileOne->setFillColor(DefaultSetting->getBackgroundTileColor());
+
+		TileOneWIFI = new sf::RectangleShape;
+		TileOneWIFI->setSize(sf::Vector2f(TileOne->getSize().x * 0.43f, TileOne->getSize().y * 0.25f));
+
+		TileOneWIFI->setFillColor(DefaultSetting->getTileColor());
+		WiFiTexture = new sf::Texture;
+		if (!WiFiTexture->loadFromFile("Data/Icons/Wifi.png"))
+		{
+			cout << "Unable to load the wifi icon for notification bar." << endl;
+		}
+		WifiIcon = new sf::RectangleShape;
+		WifiIcon->setSize(sf::Vector2f(TileOneWIFI->getSize().x * 0.26f, TileOneWIFI->getSize().y * 0.6f));
+		WifiIcon->setTexture(WiFiTexture);
+		WifiText01 = new sf::Text;
+		WifiText01->setString("WiFI");
+		WifiText01->setFont(DefaultSetting->getSystemBoldFont());
+		WifiText01->setFillColor(sf::Color::White);
+		WifiText01->setCharacterSize(12);
+
+		WifiText01->setStyle(sf::Text::Bold);
+		WifiText02 = new sf::Text;
+		WifiText02->setString("Connected");
+		WifiText02->setFont(DefaultSetting->getSystemBoldFont());
+		WifiText02->setFillColor(sf::Color::White);
+		WifiText02->setCharacterSize(12);
+
+		TileOneBluetooth = new sf::RectangleShape;
+		TileOneBluetooth->setSize(sf::Vector2f(TileOne->getSize().x * 0.43f, TileOne->getSize().y * 0.25f));
+
+		TileOneBluetooth->setFillColor(sf::Color(251, 210, 208));
+		BluetoothTexture = new sf::Texture;
+		if (!BluetoothTexture->loadFromFile("Data/Icons/Bluetooth.png"))
+		{
+			cout << "Unable to load the Bluetooth icon for notification bar." << endl;
+		}
+		BluetoothIcon = new sf::RectangleShape;
+		BluetoothIcon->setSize(sf::Vector2f(TileOneBluetooth->getSize().x * 0.26f, TileOneBluetooth->getSize().y * 0.6f));
+
+		BluetoothIcon->setTexture(BluetoothTexture);
+		BluetoothText01 = new sf::Text;
+		BluetoothText01->setString("Bluetooth");
+		BluetoothText01->setFont(DefaultSetting->getSystemBoldFont());
+		BluetoothText01->setFillColor(sf::Color::White);
+		BluetoothText01->setCharacterSize(12);
+
+		BluetoothText01->setStyle(sf::Text::Bold);
+		BluetoothText02 = new sf::Text;
+		BluetoothText02->setString("Off");
+		BluetoothText02->setFont(DefaultSetting->getSystemBoldFont());
+		BluetoothText02->setFillColor(sf::Color::White);
+		BluetoothText02->setCharacterSize(12);
+
+
+		TileOneInternet = new sf::RectangleShape;
+		TileOneInternet->setSize(sf::Vector2f(TileOne->getSize().x * 0.43f, TileOne->getSize().y * 0.25f));
+
+		TileOneInternet->setFillColor(sf::Color(251, 210, 208));
+		InternetTexture = new sf::Texture;
+		if (!InternetTexture->loadFromFile("Data/Icons/Internet.png"))
+		{
+			cout << "Unable to load the Internet icon for notification bar." << endl;
+		}
+		InternetIcon = new sf::RectangleShape;
+		InternetIcon->setSize(sf::Vector2f(TileOneInternet->getSize().x * 0.26f, TileOneInternet->getSize().y * 0.6f));
+
+		InternetIcon->setTexture(InternetTexture);
+		InternetText01 = new sf::Text;
+		InternetText01->setString("Mobile Data");
+		InternetText01->setFont(DefaultSetting->getSystemBoldFont());
+		InternetText01->setFillColor(sf::Color::White);
+		InternetText01->setCharacterSize(12);
+		InternetText01->setStyle(sf::Text::Bold);
+		InternetText02 = new sf::Text;
+		InternetText02->setString("Off");
+		InternetText02->setFont(DefaultSetting->getSystemBoldFont());
+		InternetText02->setFillColor(sf::Color::White);
+		InternetText02->setCharacterSize(12);
+
+		TileOneDark = new sf::RectangleShape;
+		TileOneDark->setSize(sf::Vector2f(TileOne->getSize().x * 0.43f, TileOne->getSize().y * 0.25f));
+		TileOneDark->setFillColor(sf::Color(251, 210, 208));
+		DarkTexture = new sf::Texture;
+		if (!DarkTexture->loadFromFile("Data/Icons/Dark.png"))
+		{
+			cout << "Unable to load the Dark icon for notification bar." << endl;
+		}
+		DarkIcon = new sf::RectangleShape;
+		DarkIcon->setSize(sf::Vector2f(TileOneDark->getSize().x * 0.23f, TileOneDark->getSize().y * 0.5f));
+		DarkIcon->setTexture(DarkTexture);
+		DarkText01 = new sf::Text;
+		DarkText01->setString("Dark Theme");
+		DarkText01->setFont(DefaultSetting->getSystemBoldFont());
+		DarkText01->setFillColor(sf::Color::White);
+		DarkText01->setCharacterSize(12);
+		DarkText01->setStyle(sf::Text::Bold);
+		DarkText02 = new sf::Text;
+		DarkText02->setString("Off");
+		DarkText02->setFont(DefaultSetting->getSystemBoldFont());
+		DarkText02->setFillColor(sf::Color::White);
+		DarkText02->setCharacterSize(12);
+
+		// Setting positions
+		TileOne->setPosition(Position.x, Position.y*100);
+		TileOneWIFI->setPosition(Position.x, Position.y * 100);
+		WifiIcon->setPosition(Position.x, Position.y * 100);
+		WifiText01->setPosition(Position.x, Position.y * 100);
+		WifiText02->setPosition(Position.x, Position.y * 100);
+
+		TileOneBluetooth->setPosition(Position.x, Position.y * 100);
+		BluetoothIcon->setPosition(Position.x, Position.y * 100);
+		BluetoothText01->setPosition(Position.x, Position.y * 100);
+		BluetoothText02->setPosition(Position.x, Position.y * 100);
+
+		TileOneInternet->setPosition(Position.x, Position.y * 100);
+		InternetIcon->setPosition(Position.x, Position.y * 100);
+		InternetText01->setPosition(Position.x, Position.y * 100);
+		InternetText02->setPosition(Position.x, Position.y * 100);
+
+		TileOneDark->setPosition(Position.x, Position.y * 100);
+		DarkIcon->setPosition(Position.x, Position.y * 100);
+		DarkText01->setPosition(Position.x, Position.y * 100);
+		DarkText02->setPosition(Position.x, Position.y * 100);
 	}
 
 	// Setter(s)
@@ -222,16 +467,15 @@ public:
 	{
 		return PreviousPosition;
 	}
-
-	// Constructor
-	Notification(int ID, float x, float y) :Tile(ID, false)
+	sf::RectangleShape* getTileOneDark()
 	{
-		Background.setSize(sf::Vector2f(x, y));
+		return TileOneDark;
 	}
-
 	// Destructor
 	~Notification()
-	{}
+	{
+		delete TileOne, TileOneWIFI, WiFiTexture, WifiIcon, WifiText01, WifiText02, TileOneBluetooth, BluetoothTexture, BluetoothIcon, BluetoothText01, BluetoothText02, TileOneInternet, InternetTexture, InternetTexture, InternetText01, InternetText02, TileOneDark, DarkTexture, DarkTexture, DarkText01, DarkText02;
+	}
 };
 
 class Recent : public Tile
@@ -239,7 +483,6 @@ class Recent : public Tile
 public:
 	void Appear(sf::Vector2f Position, DefaultSystem* Temp)
 	{
-		//Background.setFillColor(Temp->getBackgroundColor());
 		Background.setFillColor(Temp->BackgroundColor);
 		changeRecent(getID());
 		Background.setPosition(Position);
@@ -279,14 +522,11 @@ public:
 
 		sf::RectangleShape* Box = new sf::RectangleShape[*tempCount];
 		sf::Texture* tempTex = new sf::Texture;
-		//sf::RectangleShape* Box = new sf::RectangleShape[2];
-		//for (int i = 0; i < 2; i++)
 		for (int i = 0; i < *tempCount; i++)
 		{
 			if (i % 2 == 0)
 			{
 				Box[i].setSize(sf::Vector2f(Background.getSize().x * 0.45, Background.getSize().y * 0.25));
-				//	Box[i].setFillColor(sf::Color::Red);
 				Box[i].setPosition(Background.getPosition().x + Background.getSize().x * 0.03, Background.getPosition().y + Background.getSize().y * 0.04);
 			}
 			else
@@ -353,7 +593,6 @@ public:
 	{
 		Bar.setSize(sf::Vector2f(x, y));
 		Bar.setFillColor(sf::Color::Black);
-		//BackIcon.setRadius(Bar.getSize().y * 0.24f, 3);
 		BackIcon.setRadius(Bar.getSize().y * 0.24f);
 		BackIcon.setPointCount(3);
 		BackIcon.setFillColor(sf::Color::White);
@@ -468,7 +707,6 @@ public:
 			window->draw(*Cover);
 			window->draw(*CoverPicture);
 			window->display();
-			//cout << "wait ";
 		}
 
 		//delete Cover, timer, clock;
@@ -526,8 +764,6 @@ protected:
 	sf::Text* TimeWidget;
 	sf::Text* DateDayYear;
 	sf::Text* ClockSecond;
-	/*sf::Texture* TimeTexture;
-	sf::RectangleShape* TimeRect;*/
 public:
 	void initiate()
 	{
@@ -555,7 +791,6 @@ public:
 					sf::Time time = sf::seconds(1);
 					while (clock.getElapsedTime().asSeconds() <= time.asSeconds() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 					{
-						//cout << "x=" << sf::Mouse::getPosition().x << " y=" << sf::Mouse::getPosition().y << endl;
 						if (sf::Mouse::getPosition().x == temp.x && sf::Mouse::getPosition().y > temp.y)
 						{
 							(*up)++;
@@ -565,24 +800,14 @@ public:
 							(*down)++;
 						}
 					}
-					cout << "UP: " << *up << endl;
-					cout << "Down: " << *down << endl;
 					if (*up > *down)
 					{
 						Deactivate(WhoIsActiveNow);
 						Notifications->Appear(Home->Background.getPosition().x, Home->Background.getPosition().y);
 						Activate(WhoIsActiveNow);
 						window->draw(Notifications->Background);
-
-						//Notifications.Background.setPosition(Home.Background.getPosition());
 					}
-					// else if (*down > *up)
-					// {
-					// 	Deactivate(Notifications->getID());
-					// 	Notifications->Disappear();
-					// 	Activate(RecentArray[RecentCount - 2]);
-					// 	// Notifications.Background.setPosition(PreviousPositionOfNotificationBackground);
-					// }
+
 					delete up, down;
 				}
 				else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && App_01->Icon.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1)
@@ -594,7 +819,6 @@ public:
 				else if (NavigationBar->BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 				{
 					BackButton();
-					//Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
 				}
 				else if (NavigationBar->RecentIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && WhoIsActiveNow != 2)
 				{
@@ -602,27 +826,35 @@ public:
 					Recents->Appear(Home->Background.getPosition(), DefaultSetting);
 					Activate(WhoIsActiveNow);
 				}
+				else if (NavigationBar->HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && WhoIsActiveNow != 0)
+				{
+					Deactivate(WhoIsActiveNow);
+					Activate(WhoIsActiveNow);
+				}
+				else if (Notifications->getTileOneDark()->getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && WhoIsActiveNow == 1)
+				{
+					if (DefaultSetting->getDarkTheme() == 0)
+					{
+						DefaultSetting->setDarkTheme(1);
+						DefaultSetting->setBackgroundTileColor(sf::Color::Black);
+						DefaultSetting->setBackgroundColor(sf::Color(0, 0, 0, 200));
+						Notifications->getTileOneDark()->setFillColor(DefaultSetting->getThemeColor());
+						Notifications->getBackground().setFillColor(sf::Color(0, 0, 0, 200));
+					}
+					else
+					{
+						DefaultSetting->setDarkTheme(0);
+						DefaultSetting->setBackgroundTileColor(sf::Color::White);
+						DefaultSetting->setBackgroundColor(sf::Color(255, 255, 255, 200));
+						Notifications->getTileOneDark()->setFillColor(sf::Color(251, 210, 208));
+						Notifications->getBackground().setFillColor(sf::Color(255,255,255, 200));
+					}
+				}
 			}
 
 			// Setting Positions
 			NavigationBar->Appear(Home->Background.getPosition().x, Home->Background.getSize().y + Home->Background.getPosition().y);
 			UpdateStatusBar();
-			// if (NavigationBar->HomeIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			// {
-			// 	Notifications->Disappear(PreviousPositionOfNotificationBackground.x, PreviousPositionOfNotificationBackground.y);
-			// }
-
-
-
-			// Setting Positions 
-
-		/*	for (int i = 0; i < RecentCount; i++)
-			{
-				cout << RecentArray[i] << ", ";
-			}*/
-			/*cout << GoogleG->getPosition().x << " " << GoogleG->getPosition().y;
-			*/
-			//	cout << "" << TimeWidget->getPosition().x << " " << TimeWidget->getPosition().y << endl;
 			SetClockWidget();
 
 			window->clear(sf::Color::White);
@@ -634,13 +866,12 @@ public:
 			window->draw(*GoogleG);
 			window->draw(*GoogleMic);
 			window->draw(*TimeWidget);
-			//window->draw(*TimeRect);
 			window->draw(*DateDayYear);
 			window->draw(*ClockSecond);
 
 			window->draw(App_01->Icon);
 			window->draw(App_01->AppName);
-			window->draw(Notifications->Background);
+			Notifications->DrawMe(window, DefaultSetting);
 			window->draw(NavigationBar->Bar);
 			window->draw(NavigationBar->BackIcon);
 			window->draw(NavigationBar->HomeIcon);
@@ -651,8 +882,6 @@ public:
 			window->draw(*StatusBarTime);
 			window->draw(*StatusBarBattery);
 			window->draw(*StatusBarSignals);
-
-						//window->draw(Recents->Background);
 
 			window->display();
 		}
@@ -742,17 +971,6 @@ public:
 		default:
 			break;
 		}
-		// int *temp = new int(0);
-		// for (int i = RecentCount-2; i >= 0; i--)
-		// {
-		// 	if (RecentArray[i] != 1 && RecentArray[i] != 2)
-		// 	{
-		// 		RecentArray[i] = * temp;
-		// 		break;
-		// 	}
-		// }
-		// Activate(*temp);
-		// delete temp;
 	}
 	void Activate(int ID)
 	{
@@ -760,29 +978,8 @@ public:
 		switch (ID)
 		{
 		case 0:
-
-			/*
-			*temp = RecentArray[RecentCount - 1];
-			for (int i = 0; i < RecentCount; i++)
-			{
-			if (RecentArray[i] == 0)
-			{
-			RecentArray[i] = *temp;
-			RecentArray[RecentCount - 1] = 0;
-			break;
-			}
-			}
-			*/
 			Home->setIsActive(true);
-
 			break;
-			// case 1:
-			// 	Notifications->setIsActive(true);
-			// 	break;
-			// case 2:
-			// 	Recents->setIsActive(true);
-			// 	break;
-
 		case 2:
 			Recents->setIsActive(true);
 			break;
@@ -892,7 +1089,7 @@ public:
 		NavigationBar = new Navigation(Home->Background.getSize().x, Home->Background.getSize().y * 0.047);
 
 		// Setting Notification
-		Notifications = new Notification(1, Home->Background.getSize().x, Home->Background.getSize().y);
+		Notifications = new Notification(1, Home->Background.getSize(), Home->Background.getPosition(), DefaultSetting);
 		Notifications->Background.setPosition(Home->Background.getPosition().x, Home->Background.getPosition().y - 2 * (Home->Background.getSize().y));
 		//Notifications->Background.setPosition(Home->Background.getPosition());
 		Notifications->Background.setFillColor(DefaultSetting->getBackgroundColor());
@@ -906,7 +1103,6 @@ public:
 		// Setting App_01
 		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.8f);
 		App_01->AppName.setFont(DefaultSetting->getSystemFonts());
-		//		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - App_01->Icon.getRadius() - App_01->AppName.getGlobalBounds().height);
 		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - 2.5f * (App_01->Icon.getRadius() + App_01->AppName.getGlobalBounds().height));
 		App_01->AppName.setOrigin(App_01->AppName.getGlobalBounds().width / 2.f, App_01->AppName.getGlobalBounds().height / 2.f);
 		App_01->AppName.setPosition(App_01->Icon.getPosition().x + (App_01->Icon.getRadius() / 2.f) * 2.f, App_01->Icon.getPosition().y + App_01->Icon.getRadius() * 215.f / 100.f);
@@ -920,9 +1116,7 @@ public:
 		GoogleG = new sf::CircleShape;
 		GoogleG->setRadius(Home->Background.getSize().y * 0.047 * 0.6f);
 		GoogleG->setTexture(GoogleGTexture);
-		//GoogleG->setFillColor(sf::Color::Red);
 		GoogleG->setPosition(Home->Background.getPosition().x + GoogleG->getRadius() / 1.6f, Home->Background.getSize().y - GoogleG->getRadius() * 0.8f);
-		//GoogleGBackground->setPosition(GoogleG->getPosition());
 		GoogleGBackground = new sf::CircleShape;
 		GoogleGBackground->setRadius(Home->Background.getSize().y * 0.047 * 0.7f);
 		GoogleGBackground->setPosition(Home->Background.getPosition().x + GoogleG->getRadius() / 2.f, Home->Background.getSize().y - GoogleG->getRadius());
@@ -932,7 +1126,6 @@ public:
 		GoogleSearch->setSize(sf::Vector2f(Home->Background.getSize().x - Home->Background.getSize().x * 0.2f, Home->Background.getSize().y * 0.063f));
 		GoogleSearch->setPosition(GoogleGBackground->getPosition().x + GoogleG->getRadius(), GoogleGBackground->getPosition().y + 1.f);
 		GoogleSearch->setFillColor(DefaultSetting->BackgroundTileColor);
-		//GoogleSearch->setFillColor(sf::Color(0,0,255,120));
 
 		GoogleMicTexture = new sf::Texture;
 		if (!GoogleMicTexture->loadFromFile("Data/Icons/GoogleMIc.png"))
@@ -942,7 +1135,6 @@ public:
 		GoogleMic = new sf::CircleShape;
 		GoogleMic->setRadius(Home->Background.getSize().y * 0.047 * 0.6f);
 		GoogleMic->setTexture(GoogleMicTexture);
-		//GoogleMic->setFillColor(sf::Color::Green);
 		GoogleMic->setPosition(GoogleG->getPosition().x + GoogleMic->getRadius() * 13.1f, GoogleG->getPosition().y);
 
 		GoogleMicBackground = new sf::CircleShape;
@@ -954,41 +1146,26 @@ public:
 		TimeWidget = new sf::Text;
 		TimeWidget->setString("1 2\n00");
 		TimeWidget->setFont(DefaultSetting->BoldFont);
-		//TimeWidget->setFillColor(sf::Color::Red);
 		TimeWidget->setFillColor(DefaultSetting->ThemeColor);
 		TimeWidget->setCharacterSize(90);
 		TimeWidget->setPosition(Home->Background.getPosition().x + TimeWidget->getGlobalBounds().width - TimeWidget->getGlobalBounds().width * 0.10f, Home->Background.getPosition().y + Home->Background.getPosition().y * 0.5f);
-		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
 		TimeWidget->setOutlineColor(sf::Color::White);
 		TimeWidget->setOutlineThickness(1);
-		/*TimeTexture = new sf::Texture;
-		if (!TimeTexture->loadFromFile("Data/Icons/Rectangle 1.png"))
-		{
-			cout << "Unable to load the background of the clock widget" << endl;
-		}
-		TimeRect = new sf::RectangleShape;
-		TimeRect->setSize(sf::Vector2f(Home->Background.getSize().x * 0.45, Home->Background.getSize().y * 0.25));
-		TimeRect->setPosition(Home->Background.getPosition());
-		TimeRect->setFillColor(sf::Color::Red);*/
 		DateDayYear = new sf::Text;
 		DateDayYear->setString("21 Mon 2201");
 		DateDayYear->setFont(DefaultSetting->BoldFont);
-		//TimeWidget->setFillColor(sf::Color::Red);
 		DateDayYear->setFillColor(sf::Color::Black);
 		DateDayYear->setCharacterSize(15);
 		DateDayYear->setPosition(TimeWidget->getPosition().x + DateDayYear->getGlobalBounds().width * 0.2f, TimeWidget->getPosition().y + TimeWidget->getGlobalBounds().height * 1.2f);
-		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
 		DateDayYear->setOutlineColor(sf::Color::White);
 		DateDayYear->setOutlineThickness(1);
 
 		ClockSecond = new sf::Text;
 		ClockSecond->setString(".20");
 		ClockSecond->setFont(DefaultSetting->BoldFont);
-		//TimeWidget->setFillColor(sf::Color::Red);
 		ClockSecond->setFillColor(sf::Color::Black);
 		ClockSecond->setCharacterSize(35);
 		ClockSecond->setPosition(TimeWidget->getPosition().x + ClockSecond->getGlobalBounds().width * 2.5f, TimeWidget->getPosition().y + TimeWidget->getGlobalBounds().height * 0.94f);
-		//TimeWidget->setOutlineColor(sf::Color(245,124,105));
 		ClockSecond->setOutlineColor(sf::Color::White);
 		ClockSecond->setOutlineThickness(1);
 
@@ -1012,7 +1189,6 @@ public:
 		StatusBarBattery = new sf::RectangleShape;
 		StatusBarBattery->setSize(sf::Vector2f(StatusBar->getSize().x * 0.06f, StatusBar->getSize().y * 1.0f));
 		StatusBarBattery->setTexture(BatteryTexture);
-		//		StatusBarBattery->setFillColor(sf::Color::Red);
 		StatusBarBattery->setPosition(StatusBarTime->getPosition().x + StatusBarTime->getPosition().x * 1.14f, StatusBarTime->getPosition().y);
 
 		SignalsTexture = new sf::Texture;
