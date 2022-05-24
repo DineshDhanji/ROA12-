@@ -723,7 +723,6 @@ public:
 		}
 		delete tempId;
 	}
-	void RecentButton() {}
 	void Deactivate(int ID)
 	{
 		switch (ID)
