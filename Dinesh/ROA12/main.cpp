@@ -303,14 +303,16 @@ public:
 					cout << "Unable to open the cover ofr the notes." << endl;
 				}
 				Box[i].setTexture(tempTex);
+				break;
 
 			default:
 				break;
 			}
+
 			window->draw(Box[i]);
 		}
 
-		delete tempCount, tempArray, count, j, tempTex;
+		delete tempCount, tempArray, count, j, tempTex, Box, tempTex;
 	}
 
 	// Constructor
@@ -519,6 +521,7 @@ protected:
 	sf::Texture* BatteryTexture;
 	sf::RectangleShape* StatusBarSignals;
 	sf::Texture* SignalsTexture;
+
 	// Time Clock
 	sf::Text* TimeWidget;
 	sf::Text* DateDayYear;
@@ -649,7 +652,7 @@ public:
 			window->draw(*StatusBarBattery);
 			window->draw(*StatusBarSignals);
 
-			;			//window->draw(Recents->Background);
+						//window->draw(Recents->Background);
 
 			window->display();
 		}
@@ -817,7 +820,7 @@ public:
 		*s2 << now->tm_min;
 		*s2 >> *d;
 		TimeWidget->setString(*a + *b + "\n" + *c + *d);
-
+		StatusBarTime->setString(*a + *b + ":" + *c + *d);
 		*e += (now->tm_sec < 10) ? "0" : "";
 		*s3 << now->tm_sec;
 		*s3 >> *e;
@@ -1030,9 +1033,6 @@ public:
 		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget, DateDayYear, ClockSecond, StatusBar, StatusBarTime, StatusBarBattery, BatteryTexture, StatusBarSignals, SignalsTexture;
 	}
 };
-
-
-
 
 int main()
 {
