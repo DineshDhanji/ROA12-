@@ -158,7 +158,7 @@ string ErrorCheck(string expression, int len)
 			cout << "Invalid";
 			clear(&expression);
 		}
-		if(expression[i]=='r' && expression[i+1]=='-')
+		if(expression[i]==L'√' && expression[i+1]=='-')
 		{
 			cout << "Imaginary answer";
 			clear(&expression);
@@ -223,11 +223,11 @@ double singlesolve(string expression, int len)
 	for (i = 0; i < len; i++)
 	{
 		start = i;
-		if (expression[i] == 'r' || expression[i] == '!') // r means the root sign
+		if (expression[i] == L'√' || expression[i] == '!')
 		{
 			sign = expression[i];
 			j = i + 1;
-			while (expression[j] != '+' || expression[j] != '-' || expression[j] == '*' || expression[j] == '/' || expression[j] == 'r' || expression[j] == '!' || expression[j] == '%' || expression[j] == '^')
+			while (expression[j] != '+' || expression[j] != '-' || expression[j] == '*' || expression[j] == '/' || expression[j] == L'√' || expression[j] == '!' || expression[j] == '%' || expression[j] == '^')
 			{
 				num += expression[j];
 				j++;
@@ -241,7 +241,7 @@ double singlesolve(string expression, int len)
 			sign = expression[i];
 			end = i;
 			j = i - 1;
-			while (expression[j] != '+' || expression[j] != '-' || expression[j] == '*' || expression[j] == '/' || expression[j] == 'r' || expression[j] == '!' || expression[j] == '%' || expression[j] == '^')
+			while (expression[j] != '+' || expression[j] != '-' || expression[j] == '*' || expression[j] == '/' || expression[j] == L'√' || expression[j] == '!' || expression[j] == '%' || expression[j] == '^')
 			{
 				num += expression[j];
 				j--;
@@ -255,7 +255,7 @@ double singlesolve(string expression, int len)
 		
 	switch (sign)
 	{
-	case 'r':
+	case L'√':
 		answer = root(number);
 
 	case '%':
@@ -334,7 +334,7 @@ string process(string expression)
 	expression = ErrorCheck(expression, len);
 	for (i = 0; i < len; i++)
 	{
-		if (expression[j] == 'r' || expression[j] == '!' || expression[j] == '%')
+		if (expression[j] == L'√' || expression[j] == '!' || expression[j] == '%')
 		{
 			singlesolve(expression , len);
 		}
