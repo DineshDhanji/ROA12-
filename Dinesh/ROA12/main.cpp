@@ -420,7 +420,7 @@ public:
 		DarkText02->setCharacterSize(12);
 
 		// Setting positions
-		TileOne->setPosition(Position.x, Position.y*100);
+		TileOne->setPosition(Position.x, Position.y * 100);
 		TileOneWIFI->setPosition(Position.x, Position.y * 100);
 		WifiIcon->setPosition(Position.x, Position.y * 100);
 		WifiText01->setPosition(Position.x, Position.y * 100);
@@ -664,7 +664,7 @@ public:
 
 };
 
-class TempApp : public App
+class Calculator : public App
 {
 public:
 	// Function(s)
@@ -687,11 +687,11 @@ public:
 		Cover->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y * 0.047));
 		CoverPicture->setSize(sf::Vector2f(AppBackground->Background.getSize().x, AppBackground->Background.getSize().y - AppBackground->Background.getSize().y * 0.047));
 		sf::Texture* texture = new sf::Texture;
-		if (!texture->loadFromFile("Data/Icons/NotesIcon.jpg"))
+		if (!texture->loadFromFile("Data/Icons/Calculator.png"))
 		{
-			cout << "Unable to open the cover ofr the notes." << endl;
+			cout << "Unable to open the cover of the calculator." << endl;
 		}
-		Cover->setFillColor(sf::Color(254, 177, 59));
+		Cover->setFillColor(sf::Color(21, 18, 31));
 		CoverPicture->setTexture(texture);
 		CoverPicture->setScale(1.0f, 0.5f);
 		Cover->setPosition(AppBackground->Background.getPosition().x, AppBackground->Background.getPosition().y);
@@ -712,19 +712,19 @@ public:
 		//delete Cover, timer, clock;
 	}
 	// Constructor(s)
-	TempApp(float AppIconSize) : App(AppIconSize, "Notes")
+	Calculator(float AppIconSize) : App(AppIconSize, "Calculator")
 	{
 		AppBackground = new Tile(3);
-		if (!textureIcon.loadFromFile("Data/Icons/NotesIcon.jpg"))
+		if (!textureIcon.loadFromFile("Data/Icons/Calculator.png"))
 		{
-			cout << "Unable to open the App icon of Notes.";
+			cout << "Unable to open the App icon of Calculator.";
 		}
 		Icon.setTexture(&textureIcon);
 
 	}
 
 	// Constructor(s)
-	~TempApp()
+	~Calculator()
 	{
 	}
 };
@@ -739,7 +739,7 @@ protected:
 	Navigation* NavigationBar;
 	Recent* Recents;
 
-	TempApp* App_01;
+	Calculator* Calculators;
 
 	sf::RenderWindow* window;
 
@@ -779,7 +779,7 @@ public:
 				// Position will be set according to window not to whole screen.
 				sf::Vector2f MousePosition(sf::Mouse::getPosition(*window));
 				// Checking if MainBackground contain mouse or not.
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home->Background.getGlobalBounds().contains(MousePosition) && !NavigationBar->Bar.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1 && !App_01->Icon.getGlobalBounds().contains(MousePosition))
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Home->Background.getGlobalBounds().contains(MousePosition) && !NavigationBar->Bar.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1 && !Calculators->Icon.getGlobalBounds().contains(MousePosition))
 				{
 
 					int* up = new int;
@@ -810,10 +810,10 @@ public:
 
 					delete up, down;
 				}
-				else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && App_01->Icon.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1)
+				else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Calculators->Icon.getGlobalBounds().contains(MousePosition) && Home->getIsActive() == 1)
 				{
 					Deactivate(WhoIsActiveNow);
-					App_01->Appear(Home->Background.getPosition(), window);
+					Calculators->Appear(Home->Background.getPosition(), window);
 					Activate(WhoIsActiveNow);
 				}
 				else if (NavigationBar->BackIcon.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(*window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -847,7 +847,7 @@ public:
 						DefaultSetting->setBackgroundTileColor(sf::Color::White);
 						DefaultSetting->setBackgroundColor(sf::Color(255, 255, 255, 200));
 						Notifications->getTileOneDark()->setFillColor(sf::Color(251, 210, 208));
-						Notifications->getBackground().setFillColor(sf::Color(255,255,255, 200));
+						Notifications->getBackground().setFillColor(sf::Color(255, 255, 255, 200));
 					}
 				}
 			}
@@ -869,8 +869,8 @@ public:
 			window->draw(*DateDayYear);
 			window->draw(*ClockSecond);
 
-			window->draw(App_01->Icon);
-			window->draw(App_01->AppName);
+			window->draw(Calculators->Icon);
+			window->draw(Calculators->AppName);
 			Notifications->DrawMe(window, DefaultSetting);
 			window->draw(NavigationBar->Bar);
 			window->draw(NavigationBar->BackIcon);
@@ -943,10 +943,10 @@ public:
 		}
 		else if (*tempId == 3)
 		{
-			if (App_01->Disappear() == 0)
+			if (Calculators->Disappear() == 0)
 			{
-				Deactivate(App_01->AppBackground->getID());
-				App_01->Disappear();
+				Deactivate(Calculators->AppBackground->getID());
+				Calculators->Disappear();
 				Activate(RecentArray[RecentCount - 2]);
 			}
 		}
@@ -966,7 +966,7 @@ public:
 			Recents->setIsActive(false);
 			break;
 		case 3:
-			App_01->AppBackground->setIsActive(false);
+			Calculators->AppBackground->setIsActive(false);
 			break;
 		default:
 			break;
@@ -1101,11 +1101,11 @@ public:
 		Recents->Background.setFillColor(DefaultSetting->getBackgroundColor());
 
 		// Setting App_01
-		App_01 = new TempApp(Home->Background.getSize().y * 0.047 * 0.8f);
-		App_01->AppName.setFont(DefaultSetting->getSystemFonts());
-		App_01->Icon.setPosition(Home->Background.getPosition().x + App_01->Icon.getRadius() / 2.0, Home->Background.getSize().y - 2.5f * (App_01->Icon.getRadius() + App_01->AppName.getGlobalBounds().height));
-		App_01->AppName.setOrigin(App_01->AppName.getGlobalBounds().width / 2.f, App_01->AppName.getGlobalBounds().height / 2.f);
-		App_01->AppName.setPosition(App_01->Icon.getPosition().x + (App_01->Icon.getRadius() / 2.f) * 2.f, App_01->Icon.getPosition().y + App_01->Icon.getRadius() * 215.f / 100.f);
+		Calculators = new Calculator(Home->Background.getSize().y * 0.047 * 0.8f);
+		Calculators->AppName.setFont(DefaultSetting->getSystemFonts());
+		Calculators->Icon.setPosition(Home->Background.getPosition().x + Calculators->Icon.getRadius() / 2.0, Home->Background.getSize().y - 2.5f * (Calculators->Icon.getRadius() + Calculators->AppName.getGlobalBounds().height));
+		Calculators->AppName.setOrigin(Calculators->AppName.getGlobalBounds().width / 2.f, Calculators->AppName.getGlobalBounds().height / 2.f);
+		Calculators->AppName.setPosition(Calculators->Icon.getPosition().x + (Calculators->Icon.getRadius() / 2.f) * 2.f, Calculators->Icon.getPosition().y + Calculators->Icon.getRadius() * 215.f / 100.f);
 
 		// Google's Search Bar Setting
 		GoogleGTexture = new sf::Texture;
@@ -1205,7 +1205,7 @@ public:
 	// Destructor
 	~ROA12()
 	{
-		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, App_01, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget, DateDayYear, ClockSecond, StatusBar, StatusBarTime, StatusBarBattery, BatteryTexture, StatusBarSignals, SignalsTexture;
+		delete window, Home, DefaultSetting, NavigationBar, Notifications, Recents, Calculators, GoogleG, GoogleGBackground, GoogleGTexture, GoogleMic, GoogleMicBackground, GoogleMicTexture, TimeWidget, DateDayYear, ClockSecond, StatusBar, StatusBarTime, StatusBarBattery, BatteryTexture, StatusBarSignals, SignalsTexture;
 	}
 };
 
