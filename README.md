@@ -12,10 +12,12 @@ Greeintg Traveler `\(^ O ^)/`
     Visual Studio.
 
 # Walkthrough To Include The Library
-  Travelers ( ╹▽╹ ) !!! Now I will explain you guys How to include SFML to run the project.
+  
+ 
+ Travelers ( ╹▽╹ ) !!! Now I will explain you guys How to include SFML to run the project.
   Step 01: Click on the video link.
     LINK: https://youtu.be/I6CckuSptP0?t=89
-  Step 02: Watch it.
+  Step 02: Watch it.\n
   Step 03: Do the same.
   That's All Folks <(￣︶￣)>
   BUT in the video I have made a new project and that is not the requiremnet for you since you have the project (ROA12). So watch the video form 01:29 to save your time. It's fine if you want to the full video but it will just waste of your precious time, won't it ? (￣ヘ￣;)
