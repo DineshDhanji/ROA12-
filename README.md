@@ -11,12 +11,13 @@ Greeintg Traveler `\(^ O ^)/`
   ## Softwares:
     Visual Studio.
 
-# Walkthrough To Include The Library
-  Travelers ( ╹▽╹ ) !!! Now I will explain to you guys How to include SFML to run the project.
-  * Step 01: Click on the video link.
-    LINK: https://youtu.be/I6CckuSptP0?t=89
-  * Step 02: Watch it.
-  * Step 03: Do the same.
-  * That's All Folks <(￣︶￣)>
-  BUT in the video, I have made a new project, and it is not the requirement for you since you have the project (ROA12). So watch the video from 01:29 to save your time. It's alright if you want the full video,  but it will be just waste of your precious time, won't it? (￣ヘ￣;)
+  ## Walkthrough To Include The Library
+   Travelers ( ╹▽╹ ) !!! Now I will explain to you guys How to include SFML to run the project.
+     * Step 01: Click on the video link.
+       LINK: https://youtu.be/I6CckuSptP0?t=89
+     * Step 02: Watch it.      
+     * Step 03: Do the same.
+     * That's All Folks <(￣︶￣)>
+  
+   BUT in the video, I have made a new project, and it is not the requirement for you since you have the project (ROA12). So watch the video from 01:29 to save your time. It's alright if you want the full video,  but it will be just waste of your precious time, won't it? (￣ヘ￣;)
   
